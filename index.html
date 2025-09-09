@@ -237,6 +237,22 @@
       letter-spacing: 0.6px;
     }
 
+    .nav-footer {
+      position: absolute;
+      bottom: 70px;
+      left: 12px;
+      right: 12px;
+      text-align: center;
+    }
+    .footer-text {
+      font-size: 18px;
+      color: var(--ink-bright);
+      line-height: 1.4;
+      margin-bottom: 3px;
+      opacity: 1;
+      font-weight: 600;
+    }
+
     /* --- 主区域 --- */
     .main {
       grid-area: main;
@@ -413,6 +429,30 @@
       100% { transform: translateY(-50%); }
     }
 
+    /* 隐患排查样式 */
+    .hazard-scroll { position: relative; }
+    .hazard-list {
+      display: grid;
+      gap: 6px;
+      padding: 8px;
+      animation: scrollUpList 12s linear infinite;
+    }
+    .hazard-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px;
+      background: var(--glass);
+      border: 1px solid rgba(0,214,255,0.18);
+      border-radius: 8px;
+      font-size: 13px;
+    }
+    .hazard-title { flex: 1; }
+    .hazard-status { font-weight: 800; font-size: 12px; }
+    .hazard-status.rectifying { color: var(--warning); }
+    .hazard-status.unhandled { color: var(--danger); }
+    .hazard-status.completed { color: var(--accent); }
+
     /* 车队状态三种状态颜色 */
     .state { font-weight: 800; }
     .state-waiting { color: var(--warning); }
@@ -540,6 +580,281 @@
     .predict-bar.supp .fill { background: linear-gradient(90deg, #27ffa7, #00d6ff); box-shadow: 0 0 8px rgba(0,214,255,0.4); }
     .title-left { display: inline-flex; align-items: baseline; gap: 8px; }
 
+    /* e-BDN系统样式 */
+    .ebdn-info { display: flex; flex-direction: column; gap: 16px; padding: 4px; }
+    .ebdn-current { background: var(--glass); border: 1px solid rgba(0,214,255,0.20); border-radius: 12px; padding: 12px; }
+    .ebdn-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .ebdn-status { 
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 15px;
+      padding: 6px 12px;
+      background: rgba(39,255,167,0.12);
+      border: 1px solid rgba(39,255,167,0.3);
+      border-radius: 999px;
+    }
+    .ebdn-time { color: var(--ink-dim); font-size: 14px; }
+    .ebdn-grid { 
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .ebdn-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      padding: 8px 10px;
+    }
+    .ebdn-label { font-size: 12px; color: var(--ink-dim); margin-bottom: 4px; }
+    .ebdn-value { font-size: 15px; font-weight: 700; letter-spacing: 0.4px; }
+    .ebdn-value.progress { display: flex; flex-direction: column; gap: 4px; }
+    .progress-bar {
+      height: 6px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-bar .bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 999px;
+      transition: width 400ms ease;
+    }
+    
+    .ebdn-list { margin-top: 4px; }
+    .list-title { font-size: 13px; color: var(--ink-dim); margin-bottom: 8px; padding-left: 2px; }
+    .list-scroll {
+      height: 160px;
+      overflow-y: auto;
+      display: grid;
+      gap: 8px;
+      padding: 2px;
+    }
+    .list-scroll::-webkit-scrollbar { width: 6px; }
+    .list-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 3px; }
+    .list-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+    .list-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
+    
+    .record-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      background: var(--glass);
+      border: 1px solid rgba(0,214,255,0.15);
+      border-radius: 8px;
+      padding: 8px 10px;
+    }
+    .record-item:hover { border-color: rgba(0,214,255,0.3); }
+    .record-main { display: grid; gap: 4px; }
+    .record-title { font-size: 13px; font-weight: 700; }
+    .record-sub { font-size: 11px; color: var(--ink-dim); }
+    .record-amount { font-size: 14px; font-weight: 800; color: var(--accent); }
+    
+    .schedule-list {
+      display: grid;
+      gap: 8px;
+      padding: 2px;
+      height: 240px;
+      overflow-y: auto;
+    }
+    .schedule-list::-webkit-scrollbar { width: 6px; }
+    .schedule-list::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 3px; }
+    .schedule-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+    .schedule-list::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
+    
+    .schedule-item {
+      background: var(--glass);
+      border: 1px solid rgba(0,214,255,0.15);
+      border-radius: 8px;
+      padding: 10px;
+      display: grid;
+      gap: 6px;
+    }
+    .schedule-item:hover { border-color: rgba(0,214,255,0.3); }
+    .schedule-time { font-size: 13px; color: var(--primary); font-weight: 700; }
+    .schedule-ship { font-size: 14px; font-weight: 700; }
+    .schedule-info { font-size: 12px; color: var(--ink-dim); }
+    
+    /* 安全监控样式 */
+    .monitor-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding: 0 2px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      color: var(--ink-0);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 180ms ease;
+    }
+    .tab-btn:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(0,214,255,0.25);
+    }
+    .tab-btn.active {
+      background: rgba(0,214,255,0.12);
+      border-color: rgba(0,214,255,0.35);
+      box-shadow: 0 0 12px rgba(0,214,255,0.25);
+    }
+    
+    .monitor-content {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      height: calc(100vh - 400px);
+      overflow: hidden;
+    }
+    
+    .monitor-list {
+      position: absolute;
+      inset: 0;
+      display: none;
+      overflow-y: auto;
+      padding: 2px;
+      height: 100%;
+    }
+    .monitor-list.active { display: block; }
+    .monitor-list::-webkit-scrollbar { width: 6px; }
+    .monitor-list::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); border-radius: 3px; }
+    .monitor-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+    .monitor-list::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
+    
+    .monitor-section {
+      background: var(--glass);
+      border: 1px solid rgba(0,214,255,0.20);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .monitor-section:last-child { margin-bottom: 0; }
+    
+    .monitor-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .monitor-icon {
+      font-size: 18px;
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+    }
+    .monitor-title {
+      font-size: 15px;
+      font-weight: 700;
+      flex: 1;
+    }
+    .monitor-status {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      padding: 4px 10px;
+      background: rgba(39,255,167,0.12);
+      border: 1px solid rgba(39,255,167,0.25);
+      border-radius: 999px;
+    }
+    .monitor-status.warning {
+      color: var(--warning);
+      background: rgba(255,184,77,0.12);
+      border-color: rgba(255,184,77,0.25);
+    }
+    .monitor-status.danger {
+      color: var(--danger);
+      background: rgba(255,92,124,0.12);
+      border-color: rgba(255,92,124,0.25);
+    }
+    
+    .param-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .param-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      padding: 8px 10px;
+    }
+    .param-label {
+      font-size: 12px;
+      color: var(--ink-dim);
+      margin-bottom: 4px;
+    }
+    .param-value {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .param-value.warning { color: var(--warning); }
+    .param-value.danger { color: var(--danger); }
+    
+    .line-chart {
+      width: 100%;
+      height: 30px;
+    }
+    .chart-line {
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.8;
+    }
+    
+    /* AI调度控件样式 */
+    .ai-dispatch-controls {
+      display: grid;
+      gap: 12px;
+      margin: 12px 0;
+      padding: 0 2px;
+    }
+    .input-group {
+      display: grid;
+      gap: 6px;
+    }
+    .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 8px;
+      color: var(--ink-0);
+      font-size: 14px;
+      line-height: 1.5;
+      transition: all 180ms ease;
+      resize: vertical;
+      min-height: 80px;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: rgba(0,214,255,0.35);
+      box-shadow: 0 0 0 2px rgba(0,214,255,0.1);
+    }
+    .form-input::placeholder {
+      color: var(--ink-dim);
+      opacity: 0.6;
+    }
+    .btn-icon {
+      font-size: 16px;
+      margin-right: 8px;
+    }
+    .btn-text {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+
     /* --- 响应式 --- */
     @media (max-width: 1200px) {
       .panel-grid { grid-template-columns: 1fr 1fr; }
@@ -593,6 +908,10 @@
           <span class="nav-icon">🛡️</span>
           <span class="nav-text">安全监控</span>
         </button>
+      </div>
+      <div class="nav-footer">
+        <div class="footer-text">中远海运集团2025管培生培训</div>
+        <div class="footer-text">课题研讨第八组展示使用</div>
       </div>
     </aside>
 
@@ -798,18 +1117,18 @@
                     <input type="text" id="dispatchCmd" placeholder="例如：08:30 去4号储罐提货，后送至5号码头"/>
                   </div>
                   <div>
-                    <button id="btnAiDispatch" class="btn btn-primary">AI调度方案生成</button>
+                    <button id="btnAiDispatch" class="btn btn-primary" style="width: 100%;">AI调度方案生成</button>
                   </div>
                 </div>
               </div>
-              <div class="panel">
+               <div class="panel" style="display: flex; flex-direction: column; flex: 1;">
                 <div class="panel-title">车队状态 <span class="panel-subtitle">Fleet</span></div>
                 <div class="kpi-row">
                   <div class="kpi"><div class="kpi-label">在途车辆</div><div class="kpi-value">18</div></div>
                   <div class="kpi"><div class="kpi-label">装载率</div><div class="kpi-value">78%</div></div>
                   <div class="kpi"><div class="kpi-label">准点率</div><div class="kpi-value">92%</div></div>
                 </div>
-                <div class="scroll-list" style="margin-top:10px; height:140px">
+                 <div class="scroll-list" style="margin-top:10px; flex: 1; min-height: 0;">
                   <div class="scroll-track" id="fleetTrack">
                     <!-- items inserted by script -->
                   </div>
@@ -842,7 +1161,7 @@
                     </defs>
 
                     <!-- 水域填充（先绘制在底层） -->
-                    <path d="M 0 60 C 80 80, 160 50, 240 85 S 400 110, 520 80 680 70, 800 90 L 800 520 L 0 520 Z" fill="url(#gradWater)" opacity="0.6"></path>
+                    <path d="M 0 60 L 200 70 L 400 85 L 600 75 L 800 90 L 800 520 L 0 520 Z" fill="url(#gradWater)" opacity="0.6"></path>
 
                     <!-- 网格矩形（放在岸线下方位置，绘制在水域之上） -->
                     <g filter="url(#softGlow)">
@@ -906,7 +1225,7 @@
                     </g>
 
                     <!-- 岸线描边（绘制在最上层） -->
-                    <path d="M 0 60 C 80 80, 160 50, 240 85 S 400 110, 520 80 680 70, 800 90" fill="none" stroke="#9adfff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9" filter="url(#softGlow)"></path>
+                    <path d="M 0 60 L 200 70 L 400 85 L 600 75 L 800 90" fill="none" stroke="#9adfff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9" filter="url(#softGlow)"></path>
                   </svg>
                 </div>
               </div>
@@ -946,9 +1265,9 @@
                   </svg>
                 </div>
               </div>
-              <div class="panel">
+              <div class="panel" style="display: flex; flex-direction: column; flex: 1;">
                 <div class="panel-title">安全监控 <span class="panel-subtitle">Safety Monitor</span></div>
-                <div class="scroll-list">
+                <div class="scroll-list" style="flex: 1; min-height: 0;">
                   <div class="scroll-track">
                     <div class="scroll-item"><span>运输车001</span><span class="ok">状态正常</span></div>
                     <div class="scroll-item"><span>运输车002</span><span class="ok">状态正常</span></div>
@@ -996,29 +1315,112 @@
 
         <!-- 燃料加注 -->
         <section id="sec-refuel" class="section">
-          <div class="panel-grid">
-            <div class="panel" style="grid-column: span 2;">
-              <div class="panel-title">加注排程 <span class="panel-subtitle">Refueling Schedule</span></div>
-              <div class="chart-placeholder" style="height: 240px"></div>
+           <div class="layout-flex">
+             <div class="col" style="flex: 1.2; display: flex; flex-direction: column;">
+                <div class="panel" style="flex: 1.4; min-height: 360px;">
+                 <div class="panel-title">e-BDN系统 <span class="panel-subtitle">Electronic Bunker Delivery Note</span></div>
+                <div class="ebdn-info" style="padding: 8px 4px 12px 4px;">
+                  <div class="ebdn-current">
+                    <div class="ebdn-header">
+                      <span class="ebdn-status">正在加注</span>
+                      <span class="ebdn-time" id="ebdn-time">2024-03-21 15:30:45</span>
             </div>
-            <div class="panel" style="display:grid; place-items:center;">
-              <div class="panel-title" style="position:absolute; top:12px; left:12px; right:12px;">
-                码头可视 <span class="panel-subtitle">Dock Visual</span>
+                    <div class="ebdn-grid">
+                      <div class="ebdn-item">
+                        <div class="ebdn-label">船舶名称</div>
+                        <div class="ebdn-value" id="ebdn-ship">SANTOS SPIRIT</div>
               </div>
-              <div class="ring-3d"></div>
+                      <div class="ebdn-item">
+                        <div class="ebdn-label">IMO编号</div>
+                        <div class="ebdn-value" id="ebdn-imo">9876543</div>
             </div>
-            <div class="panel">
-              <div class="panel-title">作业效率 <span class="panel-subtitle">Efficiency</span></div>
+                      <div class="ebdn-item">
+                        <div class="ebdn-label">泊位</div>
+                        <div class="ebdn-value" id="ebdn-berth">3号码头</div>
+                      </div>
+                      <div class="ebdn-item">
+                        <div class="ebdn-label">加注设备</div>
+                        <div class="ebdn-value" id="ebdn-equipment">加注臂B-02</div>
+                      </div>
+                      <div class="ebdn-item">
+                        <div class="ebdn-label">计划加注量</div>
+                        <div class="ebdn-value" id="ebdn-plan">850 m³</div>
+                      </div>
+                      <div class="ebdn-item">
+                        <div class="ebdn-label">已加注量</div>
+                        <div class="ebdn-value progress" id="ebdn-current">
+                          <span>486 m³</span>
+                          <div class="progress-bar"><div class="bar" style="width: 57%"></div></div>
+                        </div>
+                      </div>
+                      <div class="ebdn-item">
+                        <div class="ebdn-label">加注流速</div>
+                        <div class="ebdn-value" id="ebdn-flow">380 m³/h</div>
+                      </div>
+                      <div class="ebdn-item">
+                        <div class="ebdn-label">预计完成</div>
+                        <div class="ebdn-value" id="ebdn-eta">16:45:00</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="ebdn-list">
+                    <div class="list-title">今日加注记录</div>
+                    <div class="list-scroll" id="ebdn-records" style="height: 200px;">
+                      <!-- 由脚本动态填充 -->
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="panel" style="margin-top: 8px;">
+                <div class="panel-title">AI智能加注调度 <span class="panel-subtitle">Efficiency</span></div>
               <div class="kpi-row">
                 <div class="kpi"><div class="kpi-label">平均加注时长</div><div class="kpi-value">38 min</div></div>
                 <div class="kpi"><div class="kpi-label">平均等待时长</div><div class="kpi-value">11 min</div></div>
                 <div class="kpi"><div class="kpi-label">加注成功率</div><div class="kpi-value">99.2%</div></div>
               </div>
-              <div class="chart-placeholder" style="margin-top:10px"></div>
+                <div class="ai-dispatch-controls">
+                  <div class="input-group">
+                    <label class="form-label" for="aiDispatchCmd">调度指令</label>
+                    <textarea id="aiDispatchCmd" class="form-input" rows="1" placeholder="例如：3号码头需要加注2000m³，预计用时4小时&#10;可输入多行调度需求"></textarea>
             </div>
-            <div class="panel" style="grid-column: span 3;">
-              <div class="panel-title">能力曲线 <span class="panel-subtitle">Capacity Curve</span></div>
-              <div class="chart-placeholder" style="height: 200px"></div>
+                  <button id="btnAiDispatchGen" class="btn btn-primary">
+                    <span class="btn-icon">🤖</span>
+                    <span class="btn-text">AI调度方案生成</span>
+                  </button>
+                </div>
+            </div>
+            </div>
+             <div class="col" style="display: flex; flex-direction: column;">
+               <div class="panel" style="flex: 1; display: flex; flex-direction: column;">
+                 <div class="panel-title">安全监控 <span class="panel-subtitle">Safety Monitor</span></div>
+                 <div class="monitor-tabs">
+                   <button class="tab-btn active" data-type="truck">加注车</button>
+                   <button class="tab-btn" data-type="vessel">加注船</button>
+                   <button class="tab-btn" data-type="pipe">管道</button>
+                 </div>
+                 <div class="monitor-content" style="flex: 1;">
+                   <!-- 加注车监控列表 -->
+                   <div class="monitor-list active" id="monitor-truck">
+                     <!-- 由脚本动态填充 -->
+                   </div>
+                   
+                   <!-- 加注船监控列表 -->
+                   <div class="monitor-list" id="monitor-vessel">
+                     <!-- 由脚本动态填充 -->
+                   </div>
+                   
+                   <!-- 管道监控列表 -->
+                   <div class="monitor-list" id="monitor-pipe">
+                     <!-- 由脚本动态填充 -->
+                   </div>
+                 </div>
+               </div>
+               <div class="panel" style="margin-top: 12px;">
+                 <div class="panel-title">加注排程 <span class="panel-subtitle">Refueling Schedule</span></div>
+                 <div class="schedule-list" id="refuel-schedule">
+                   <!-- 由脚本动态填充 -->
+                 </div>
+               </div>
             </div>
           </div>
         </section>
@@ -1038,15 +1440,21 @@
                   <div class="kpi"><div class="kpi-label">整改中</div><div class="kpi-value" style="color: var(--warning)">5</div></div>
                   <div class="kpi"><div class="kpi-label">未处理</div><div class="kpi-value" style="color: var(--danger)">2</div></div>
                 </div>
-                <div class="chart-placeholder" style="margin-top:10px; height:140px"></div>
+                <div class="hazard-scroll" style="margin-top:10px; height:140px; overflow:hidden;">
+                  <div class="hazard-list" id="hazardList">
+                    <!-- 由脚本动态填充 -->
+                  </div>
+                </div>
               </div>
             </div>
             <div class="col" style="flex:1.2 1 0">
               <div class="panel" style="display:grid; place-items:center; min-height: 100%">
                 <div class="panel-title" style="position:absolute; top:12px; left:12px; right:12px;">
-                  视觉监控孪生 <span class="panel-subtitle">Visual Digital Twin</span>
+                  无人机巡视监控平台 <span class="panel-subtitle">Drone Surveillance Platform</span>
                 </div>
-                <div class="ring-3d" style="width:220px; height:220px"></div>
+                <div class="drone-icon" style="width:220px; height:220px; display: flex; align-items: center; justify-content: center; font-size: 80px; color: var(--primary);">
+                  🚁
+                </div>
               </div>
             </div>
             <div class="col">
@@ -1166,6 +1574,315 @@
       // nothing else needed; updateSmart will update values
     })();
 
+    // AI调度方案生成
+    (function aiDispatch() {
+      const btn = document.getElementById('btnAiDispatchGen');
+      const input = document.getElementById('aiDispatchCmd');
+      
+      if (!btn || !input) return;
+      
+      btn.addEventListener('click', () => {
+        const cmd = input.value.trim();
+        if (!cmd) {
+          alert('请输入调度指令');
+          return;
+        }
+        
+        // 这里可以接入实际的AI调度系统
+        alert(`正在生成AI调度方案...\n\n指令内容：${cmd}\n\n（此处为演示，可接入实际的AI调度系统）`);
+      });
+    })();
+
+    // 安全监控系统实时数据更新
+    (function safetyMonitor() {
+      // 获取DOM元素
+      const tabBtns = document.querySelectorAll('.tab-btn');
+      const monitorLists = {
+        truck: document.getElementById('monitor-truck'),
+        vessel: document.getElementById('monitor-vessel'),
+        pipe: document.getElementById('monitor-pipe')
+      };
+      
+      if (!monitorLists.truck || !monitorLists.vessel || !monitorLists.pipe) return;
+      
+      // 设备配置
+      const deviceConfig = {
+        truck: {
+          icon: '🚛',
+          prefix: 'B',
+          count: 8,
+          name: '加注车'
+        },
+        vessel: {
+          icon: '⛴️',
+          prefix: 'V',
+          count: 6,
+          name: '加注船'
+        },
+        pipe: {
+          icon: '🔧',
+          prefix: 'P',
+          count: 4,
+          name: '加注管道'
+        }
+      };
+      
+      // 参数范围定义
+      const ranges = {
+        temp: { min: 22, max: 28, unit: '°C', precision: 1, warning: 26, danger: 27 },
+        pressure: { min: 2.4, max: 3.4, unit: ' MPa', precision: 1, warning: 3.0, danger: 3.2 },
+        flow: { min: 250, max: 450, unit: ' m³/h', precision: 0, warning: 380, danger: 420 }
+      };
+      
+      // 生成随机值
+      function randomInRange(min, max, precision = 0) {
+        const value = min + Math.random() * (max - min);
+        return Number(value.toFixed(precision));
+      }
+      
+      // 生成新的路径点
+      function generatePoints(value, min, max) {
+        const points = [];
+        const baseY = 15;
+        const amplitude = 5;
+        
+        for (let i = 0; i <= 100; i += 20) {
+          const normalizedValue = (value - min) / (max - min);
+          const y = baseY + (Math.random() * 2 - 1) * amplitude * normalizedValue;
+          points.push(`${i} ${y}`);
+        }
+        
+        return 'M ' + points.join(' L ');
+      }
+      
+      // 获取参数状态类名
+      function getStatusClass(value, range) {
+        if (value >= range.danger) return 'danger';
+        if (value >= range.warning) return 'warning';
+        return '';
+      }
+      
+      // 获取设备整体状态
+      function getDeviceStatus(params) {
+        if (params.some(p => p.value >= p.range.danger)) return { text: '异常', class: 'danger' };
+        if (params.some(p => p.value >= p.range.warning)) return { text: '警告', class: 'warning' };
+        return { text: '正常', class: '' };
+      }
+      
+      // 生成单个设备的HTML
+      function generateDeviceHTML(type, index) {
+        const config = deviceConfig[type];
+        const id = `${config.prefix}-${String(index + 1).padStart(2, '0')}`;
+        
+        // 生成参数值
+        const temp = randomInRange(ranges.temp.min, ranges.temp.max, ranges.temp.precision);
+        const pressure = randomInRange(ranges.pressure.min, ranges.pressure.max, ranges.pressure.precision);
+        const flow = randomInRange(ranges.flow.min, ranges.flow.max, ranges.flow.precision);
+        
+        // 获取设备状态
+        const status = getDeviceStatus([
+          { value: temp, range: ranges.temp },
+          { value: pressure, range: ranges.pressure },
+          { value: flow, range: ranges.flow }
+        ]);
+        
+        return `
+          <div class="monitor-section" data-id="${id}">
+            <div class="monitor-header">
+              <div class="monitor-icon">${config.icon}</div>
+              <div class="monitor-title">${config.name} #${id}</div>
+              <div class="monitor-status ${status.class}">${status.text}</div>
+            </div>
+            <div class="param-grid">
+              <div class="param-item">
+                <div class="param-label">温度</div>
+                <div class="param-value ${getStatusClass(temp, ranges.temp)}">${temp}${ranges.temp.unit}</div>
+                <div class="param-chart">
+                  <svg viewBox="0 0 100 30" class="line-chart">
+                    <path class="chart-line" d="${generatePoints(temp, ranges.temp.min, ranges.temp.max)}" stroke="var(--primary)"></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="param-item">
+                <div class="param-label">压力</div>
+                <div class="param-value ${getStatusClass(pressure, ranges.pressure)}">${pressure}${ranges.pressure.unit}</div>
+                <div class="param-chart">
+                  <svg viewBox="0 0 100 30" class="line-chart">
+                    <path class="chart-line" d="${generatePoints(pressure, ranges.pressure.min, ranges.pressure.max)}" stroke="var(--accent)"></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="param-item">
+                <div class="param-label">流量</div>
+                <div class="param-value ${getStatusClass(flow, ranges.flow)}">${flow}${ranges.flow.unit}</div>
+                <div class="param-chart">
+                  <svg viewBox="0 0 100 30" class="line-chart">
+                    <path class="chart-line" d="${generatePoints(flow, ranges.flow.min, ranges.flow.max)}" stroke="var(--warning)"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      
+      // 更新设备列表
+      function updateDeviceList(type) {
+        const list = monitorLists[type];
+        const config = deviceConfig[type];
+        list.innerHTML = Array.from({ length: config.count }, (_, i) => generateDeviceHTML(type, i)).join('');
+      }
+      
+      // 更新所有设备列表
+      function updateAllLists() {
+        Object.keys(deviceConfig).forEach(updateDeviceList);
+      }
+      
+      // 标签切换逻辑
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const type = btn.getAttribute('data-type');
+          
+          // 更新按钮状态
+          tabBtns.forEach(b => b.classList.toggle('active', b === btn));
+          
+          // 更新列表显示
+          Object.entries(monitorLists).forEach(([key, list]) => {
+            list.classList.toggle('active', key === type);
+          });
+        });
+      });
+      
+      // 初始更新
+      updateAllLists();
+      
+      // 定期更新
+      setInterval(updateAllLists, 2000);
+    })();
+
+    // e-BDN系统实时数据更新
+    (function ebdnSystem() {
+      // 获取所有需要更新的元素
+      const timeEl = document.getElementById('ebdn-time');
+      const shipEl = document.getElementById('ebdn-ship');
+      const imoEl = document.getElementById('ebdn-imo');
+      const berthEl = document.getElementById('ebdn-berth');
+      const equipmentEl = document.getElementById('ebdn-equipment');
+      const planEl = document.getElementById('ebdn-plan');
+      const currentEl = document.getElementById('ebdn-current');
+      const flowEl = document.getElementById('ebdn-flow');
+      const etaEl = document.getElementById('ebdn-eta');
+      const recordsEl = document.getElementById('ebdn-records');
+      const scheduleEl = document.getElementById('refuel-schedule');
+      
+      if (!timeEl || !currentEl || !flowEl || !recordsEl || !scheduleEl) return;
+
+      // 船舶名称库
+      const shipNames = [
+        'SANTOS SPIRIT', 'BRAZIL STAR', 'VERDE GLORY', 'ATLANTIC PIONEER',
+        'PACIFIC VENTURE', 'SOUTHERN CROWN', 'NORDIC PRINCE', 'AEGEAN QUEEN'
+      ];
+      
+      // 生成随机IMO编号
+      const randomIMO = () => '9' + Math.floor(Math.random() * 900000 + 100000);
+      
+      // 生成随机时间字符串
+      const randomTime = (baseTime) => {
+        const time = new Date(baseTime.getTime() + Math.random() * 24 * 60 * 60 * 1000);
+        return time.toLocaleTimeString('zh-CN', {hour12: false});
+      };
+      
+      // 生成随机加注量
+      const randomVolume = () => Math.floor(Math.random() * 800 + 200);
+      
+      // 生成随机流速
+      const randomFlow = () => Math.floor(Math.random() * 200 + 250);
+      
+      // 更新当前加注信息
+      function updateCurrent() {
+        const now = new Date();
+        timeEl.textContent = now.toLocaleString('zh-CN', {hour12: false});
+        
+        // 更新进度
+        const plan = parseInt(planEl.textContent);
+        const current = Math.floor(plan * (Math.random() * 0.2 + 0.4));
+        const percent = (current / plan * 100).toFixed(0);
+        currentEl.querySelector('span').textContent = `${current} m³`;
+        currentEl.querySelector('.bar').style.width = `${percent}%`;
+        
+        // 更新流速
+        flowEl.textContent = `${randomFlow()} m³/h`;
+        
+        // 更新预计完成时间
+        const remaining = (plan - current) / parseInt(flowEl.textContent);
+        const eta = new Date(now.getTime() + remaining * 60 * 60 * 1000);
+        etaEl.textContent = eta.toLocaleTimeString('zh-CN', {hour12: false});
+      }
+      
+      // 生成加注记录
+      function generateRecords() {
+        if (!recordsEl) return;
+        const records = [];
+        const now = new Date();
+        
+        for (let i = 0; i < 8; i++) {
+          const time = new Date(now.getTime() - Math.random() * 12 * 60 * 60 * 1000);
+          records.push({
+            ship: shipNames[Math.floor(Math.random() * shipNames.length)],
+            time: time.toLocaleString('zh-CN', {hour12: false}),
+            berth: `${Math.floor(Math.random() * 5 + 1)}号码头`,
+            volume: randomVolume()
+          });
+        }
+        
+        recordsEl.innerHTML = records.map(r => `
+          <div class="record-item">
+            <div class="record-main">
+              <div class="record-title">${r.ship}</div>
+              <div class="record-sub">${r.time} · ${r.berth}</div>
+            </div>
+            <div class="record-amount">${r.volume} m³</div>
+          </div>
+        `).join('');
+      }
+      
+      // 生成加注排程
+      function generateSchedule() {
+        if (!scheduleEl) return;
+        const schedule = [];
+        const now = new Date();
+        
+        for (let i = 0; i < 6; i++) {
+          const time = new Date(now.getTime() + Math.random() * 24 * 60 * 60 * 1000);
+          schedule.push({
+            time: time.toLocaleString('zh-CN', {hour12: false}),
+            ship: shipNames[Math.floor(Math.random() * shipNames.length)],
+            berth: `${Math.floor(Math.random() * 5 + 1)}号码头`,
+            volume: randomVolume()
+          });
+        }
+        
+        schedule.sort((a, b) => new Date(a.time) - new Date(b.time));
+        
+        scheduleEl.innerHTML = schedule.map(s => `
+          <div class="schedule-item">
+            <div class="schedule-time">${s.time}</div>
+            <div class="schedule-ship">${s.ship}</div>
+            <div class="schedule-info">${s.berth} · 计划加注 ${s.volume} m³</div>
+          </div>
+        `).join('');
+      }
+      
+      // 初始化显示
+      generateRecords();
+      generateSchedule();
+      
+      // 定期更新
+      setInterval(updateCurrent, 2000);
+      setInterval(generateRecords, 10000);
+      setInterval(generateSchedule, 15000);
+    })();
+
     // 标题时间：每秒刷新
     (function liveClock(){
       const el = document.getElementById('clock');
@@ -1196,6 +1913,65 @@
         const text = cmd.value.trim() || '无';
         alert(`AI调度方案生成中\n车辆：运输车${id}\n指令：${text}\n（占位提示，可接入真实AI）`);
       });
+    })();
+
+    // 隐患排查：生成滚动的隐患排查情况
+    (function hazardScroll(){
+      const list = document.getElementById('hazardList');
+      if (!list) return;
+      
+      const hazardTypes = [
+        '储罐A-01温度异常监测',
+        '加注管道B-03压力检查', 
+        '运输车辆C-05安全装置检查',
+        '码头D-02防护设施检查',
+        '储罐A-02液位传感器校准',
+        '加注臂E-01密封性检测',
+        '运输车辆C-08消防器材检查',
+        '管道F-03腐蚀检测',
+        '储罐A-03通风系统检查',
+        '码头D-04照明设施检查',
+        '加注设备G-02流量计校准',
+        '运输车辆C-12轮胎气压检查',
+        '储罐A-04安全阀测试',
+        '管道F-05保温层检查',
+        '码头D-06围栏完整性检查'
+      ];
+      
+      const statuses = [
+        { text: '整改中', cls: 'rectifying' },
+        { text: '未处理', cls: 'unhandled' },
+        { text: '已完成', cls: 'completed' }
+      ];
+      
+      function generateHazardItems() {
+        let html = '';
+        // 生成20个隐患项目用于滚动
+        for (let i = 0; i < 20; i++) {
+          const hazard = hazardTypes[Math.floor(Math.random() * hazardTypes.length)];
+          const status = statuses[Math.floor(Math.random() * statuses.length)];
+          html += `
+            <div class="hazard-item">
+              <span class="hazard-title">${hazard}</span>
+              <span class="hazard-status ${status.cls}">${status.text}</span>
+            </div>
+          `;
+        }
+        // 重复一遍用于无缝滚动
+        for (let i = 0; i < 20; i++) {
+          const hazard = hazardTypes[Math.floor(Math.random() * hazardTypes.length)];
+          const status = statuses[Math.floor(Math.random() * statuses.length)];
+          html += `
+            <div class="hazard-item">
+              <span class="hazard-title">${hazard}</span>
+              <span class="hazard-status ${status.cls}">${status.text}</span>
+            </div>
+          `;
+        }
+        return html;
+      }
+      
+      list.innerHTML = generateHazardItems();
     })();
 
     // 车队状态：生成1-18号车，随机三种状态并滚动显示
