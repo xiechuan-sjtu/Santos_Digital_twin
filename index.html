@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>巴西桑托斯港生物柴油加注管理系统 - 数字孪生可视化大屏</title>
+  <style>
+    /* --- 基础与主题 --- */
+    :root {
+      --bg-0: #060a14;
+      --bg-1: #0a1328;
+      --bg-2: #0f1d3d;
+      --ink-0: #cfe9ff;
+      --ink-dim: #86a6c8;
+      --primary: #00d6ff;
+      --accent: #27ffa7;
+      --warning: #ffb84d;
+      --danger: #ff5c7c;
+      --card: rgba(11, 22, 44, 0.6);
+      --glass: rgba(255, 255, 255, 0.06);
+      --border: rgba(255, 255, 255, 0.12);
+      --glow: 0 0 24px rgba(0, 214, 255, 0.35), 0 0 48px rgba(39, 255, 167, 0.15);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+      color: var(--ink-0);
+      background: radial-gradient(1200px 800px at 72% 18%, #0b1b3a 0%, #0a1328 45%, #060a14 100%);
+      overflow: hidden;
+      letter-spacing: 0.2px;
+    }
+
+    /* --- 布局 --- */
+    .dashboard {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      grid-template-rows: 92px 1fr;
+      grid-template-areas:
+        "header header"
+        "sidebar main";
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+      isolation: isolate;
+    }
+
+    /* --- 背景层 --- */
+    .bg-nebula {
+      position: fixed;
+      inset: -10% -10% -10% -10%;
+      z-index: -2;
+      background:
+        radial-gradient(800px 500px at 80% 20%, rgba(39,255,167,0.08), transparent 60%),
+        radial-gradient(900px 700px at 20% 30%, rgba(0,214,255,0.10), transparent 60%),
+        radial-gradient(700px 600px at 60% 80%, rgba(255,92,124,0.06), transparent 60%);
+      filter: saturate(140%) blur(0.2px);
+      animation: nebulaShift 32s ease-in-out infinite alternate;
+    }
+
+    @keyframes nebulaShift {
+      0% { transform: translate3d(0,0,0) scale(1.02); }
+      50% { transform: translate3d(-1.2%, 0.8%, 0) scale(1.05); }
+      100% { transform: translate3d(1.2%, -0.6%, 0) scale(1.03); }
+    }
+
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+      background-size: 48px 48px, 48px 48px;
+      transform: perspective(900px) rotateX(45deg) translateY(-22%);
+      mask-image: linear-gradient(to top, transparent, black 30%);
+      opacity: 0.35;
+      animation: gridDrift 18s linear infinite;
+    }
+
+    @keyframes gridDrift {
+      from { background-position: 0 0, 0 0; }
+      to { background-position: 0 48px, 48px 0; }
+    }
+
+    /* --- 华丽边框 --- */
+    .frame-glow::before,
+    .frame-glow::after {
+      content: "";
+      position: absolute;
+      pointer-events: none;
+      inset: 0;
+      border: 1px solid rgba(0, 214, 255, 0.18);
+      border-radius: 14px;
+      box-shadow: inset 0 0 24px rgba(0, 214, 255, 0.08);
+    }
+    .frame-glow::after {
+      filter: blur(6px);
+      opacity: 0.7;
+    }
+
+    /* --- 顶部标题栏 --- */
+    .header {
+      grid-area: header;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 22px 16px 18px;
+      position: relative;
+    }
+    .title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .title-badge {
+      width: 10px;
+      height: 56px;
+      background: linear-gradient(180deg, var(--primary), var(--accent));
+      border-radius: 8px;
+      box-shadow: var(--glow);
+    }
+    .title {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-shadow: 0 0 18px rgba(0,214,255,0.35);
+      background: linear-gradient(90deg, #eff8ff, #9adfff 45%, #9effd8 90%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin: 0;
+    }
+    .subtitle {
+      color: var(--ink-dim);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+    .title-time {
+      color: #e9f7ff;
+      font-size: 12px;
+      margin-top: 4px;
+      letter-spacing: 0.4px;
+      text-shadow: 0 0 12px rgba(0,214,255,0.35);
+    }
+    .title-row { display: flex; align-items: baseline; gap: 20px; }
+    .title-time-inline {
+      color: #e9f7ff;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      text-shadow: 0 0 12px rgba(0,214,255,0.35);
+      white-space: nowrap;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: var(--ink-dim);
+      font-size: 12px;
+    }
+    .pulse-dot {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 14px rgba(39,255,167,0.9);
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(0.9); opacity: 0.85; }
+      50% { transform: scale(1.15); opacity: 1; }
+    }
+
+    /* --- 侧边栏 --- */
+    .sidebar {
+      grid-area: sidebar;
+      padding: 14px;
+      padding-right: 10px;
+      position: relative;
+    }
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: calc(100% - 4px);
+    }
+    .nav-title {
+      font-size: 12px;
+      color: var(--ink-dim);
+      margin: 2px 8px 8px 8px;
+      opacity: 0.9;
+    }
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--ink-0);
+      backdrop-filter: blur(6px);
+      cursor: pointer;
+      transition: 180ms ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .nav-btn::after {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: 12px;
+      padding: 1px;
+      background: linear-gradient(120deg, rgba(0,214,255,0.0), rgba(0,214,255,0.35), rgba(39,255,167,0.25), rgba(0,214,255,0.0));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+              mask-composite: exclude;
+      opacity: 0;
+      transition: opacity 180ms ease;
+    }
+    .nav-btn:hover::after { opacity: 1; }
+    .nav-btn:hover { transform: translateY(-1px); box-shadow: var(--glow); }
+    .nav-btn.active { box-shadow: var(--glow); border-color: rgba(0,214,255,0.35); }
+
+    .nav-icon {
+      width: 22px; height: 22px;
+      display: grid; place-items: center;
+      color: var(--primary);
+      text-shadow: 0 0 10px rgba(0,214,255,0.6);
+      font-size: 16px;
+    }
+    .nav-text {
+      font-size: 15px; font-weight: 600;
+      letter-spacing: 0.6px;
+    }
+
+    /* --- 主区域 --- */
+    .main {
+      grid-area: main;
+      padding: 14px 18px 18px 12px;
+      position: relative;
+    }
+
+    .sections {
+      width: 100%; height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .section {
+      position: absolute;
+      inset: 0;
+      display: none;
+      padding: 8px;
+      animation: fadeUp 320ms ease both;
+    }
+    .section.active { display: block; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- 面板/卡片 --- */
+    .panel-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1.4fr 1fr;
+      grid-auto-rows: minmax(190px, auto);
+      gap: 12px;
+      height: 100%;
+    }
+
+    .panel {
+      position: relative;
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 12px 10px 12px;
+      backdrop-filter: blur(6px);
+      overflow: hidden;
+    }
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(1200px 400px at 30% -10%, rgba(0,214,255,0.12), transparent 40%),
+                  radial-gradient(800px 400px at 80% -10%, rgba(39,255,167,0.10), transparent 42%);
+      pointer-events: none;
+    }
+
+    .panel-title {
+      display: flex; align-items: center; justify-content: space-between;
+      color: #d6f3ff;
+      font-weight: 700; letter-spacing: 0.8px; font-size: 14px;
+      margin-bottom: 8px;
+      text-shadow: 0 0 14px rgba(0,214,255,0.4);
+    }
+    .panel-subtitle { color: var(--ink-dim); font-size: 11px; }
+
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .kpi {
+      background: var(--glass);
+      border: 1px solid rgba(0,214,255,0.18);
+      border-radius: 12px;
+      padding: 10px 12px;
+      box-shadow: inset 0 0 18px rgba(0,214,255,0.08);
+    }
+    .kpi-label { font-size: 12px; color: var(--ink-dim); margin-bottom: 6px; }
+    .kpi-value { font-size: 22px; font-weight: 800; letter-spacing: 1px; }
+
+    .chart-placeholder {
+      height: 180px;
+      border-radius: 10px;
+      border: 1px dashed rgba(255,255,255,0.18);
+      background:
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.06) 0 2px, transparent 2px 4px),
+        linear-gradient(180deg, rgba(0,214,255,0.12), rgba(39,255,167,0.06));
+      position: relative;
+      overflow: hidden;
+    }
+    .chart-placeholder::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.18) 50%, transparent 100%);
+      transform: translateX(-100%);
+      animation: shimmer 2.8s ease-in-out infinite;
+    }
+    @keyframes shimmer {
+      to { transform: translateX(100%); }
+    }
+
+    /* 里程与能耗 - 运输车装载量柱状图 */
+    .fuel-bars { height: 240px; border-radius: 10px; border: 1px dashed rgba(255,255,255,0.18); background: linear-gradient(180deg, rgba(0,214,255,0.12), rgba(39,255,167,0.06)); padding: 8px 10px; display: flex; align-items: flex-end; }
+    .bars-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; align-items: end; width: 100%; height: 100%; }
+    .bar-col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .bar-col .val { font-size: 11px; font-weight: 800; color: #e9f7ff; opacity: 0.9; }
+    .bar-col .bar { width: 100%; min-width: 6px; height: calc(var(--v, 0) * 100%); border-radius: 8px; background: linear-gradient(180deg, #27ffa7, #00d6ff); box-shadow: 0 6px 16px rgba(0,214,255,0.25); transition: height 600ms ease; }
+    .bar-col .label { font-size: 10px; color: var(--ink-dim); letter-spacing: 0.4px; }
+
+    /* 港区态势图 - 车辆红点闪烁与光晕 */
+    .veh-dot { fill: #ff4d6d; stroke: rgba(255, 93, 120, 0.8); stroke-width: 1; filter: drop-shadow(0 0 6px rgba(255, 93, 120, 0.9)); }
+    .veh-blink { animation: vehPulse 1.6s ease-in-out infinite; }
+    @keyframes vehPulse {
+      0%, 100% { opacity: 0.85; }
+      50% { opacity: 1; }
+    }
+    .veh-label { fill: #ffdfe6; font-size: 10px; font-weight: 700; paint-order: stroke; stroke: rgba(6,10,20,0.6); stroke-width: 2px; }
+    /* 移动红点的额外“波纹”闪烁效果 */
+    .veh-pulse { fill: none; stroke: rgba(255, 77, 109, 0.8); stroke-width: 2; opacity: 0.8; transform-box: fill-box; transform-origin: center; animation: vehPulseRing 1.8s ease-out infinite; }
+    @keyframes vehPulseRing { 0% { transform: scale(1); opacity: 0.9; } 70% { transform: scale(3); opacity: 0.15; } 100% { transform: scale(3); opacity: 0; } }
+
+    /* 里程与能耗 - 选择 + 饼图 */
+    .select-row { display: flex; align-items: center; gap: 8px; margin: 6px 0 10px 0; color: var(--ink-dim); font-size: 12px; }
+    .select-row select { background: rgba(255,255,255,0.06); color: #e9f7ff; border: 1px solid rgba(255,255,255,0.18); border-radius: 8px; padding: 4px 8px; }
+    .pie-area { height: 220px; border-radius: 10px; border: 1px dashed rgba(255,255,255,0.18); background: linear-gradient(180deg, rgba(0,214,255,0.12), rgba(39,255,167,0.06)); display: grid; place-items: center; }
+    .pie-text { fill: #e9f7ff; font-weight: 800; font-size: 22px; text-anchor: middle; dominant-baseline: middle; }
+    .pie-sub { fill: var(--ink-dim); font-size: 12px; text-anchor: middle; dominant-baseline: middle; }
+    .pie-track { fill: none; stroke: rgba(255,255,255,0.14); stroke-width: 16; }
+    .pie-prog { fill: none; stroke: url(#pieGrad); stroke-width: 16; stroke-linecap: round; transition: stroke-dasharray 600ms ease; }
+
+    /* 运输调度 - 选择/指令/按钮 */
+    .dispatch-controls { display: grid; gap: 10px; margin-top: 6px; }
+    .dispatch-controls .form-label { display: block; font-size: 12px; color: var(--ink-dim); margin-bottom: 4px; }
+    .dispatch-controls select,
+    .dispatch-controls input[type="text"] {
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      color: #e9f7ff;
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 8px;
+      padding: 8px 10px;
+      outline: none;
+    }
+    .btn { cursor: pointer; border: 1px solid rgba(0,214,255,0.30); border-radius: 10px; padding: 10px 14px; font-weight: 800; letter-spacing: 0.6px; }
+    .btn-primary { background: linear-gradient(90deg, #00d6ff, #27ffa7); color: #0a1328; box-shadow: 0 0 12px rgba(0,214,255,0.25); }
+    .btn-primary:hover { filter: brightness(1.05); box-shadow: 0 0 18px rgba(0,214,255,0.45); }
+
+    /* 滚动列表（安全监控-运输车状态） */
+    .scroll-list {
+      height: 120px;
+      border-radius: 10px;
+      border: 1px dashed rgba(255,255,255,0.18);
+      background: linear-gradient(180deg, rgba(0,214,255,0.12), rgba(39,255,167,0.06));
+      overflow: hidden;
+      position: relative;
+    }
+    .scroll-track {
+      display: grid;
+      gap: 6px;
+      padding: 8px;
+      animation: scrollUpList 10s linear infinite;
+    }
+    .scroll-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px;
+      background: var(--glass);
+      border: 1px solid rgba(0,214,255,0.18);
+      border-radius: 8px;
+      font-size: 13px;
+    }
+    .scroll-item .ok { color: #27ffa7; font-weight: 800; }
+    @keyframes scrollUpList {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-50%); }
+    }
+
+    /* 车队状态三种状态颜色 */
+    .state { font-weight: 800; }
+    .state-waiting { color: var(--warning); }
+    .state-transit { color: var(--accent); }
+    .state-park { color: var(--primary); }
+
+    .ring-3d {
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 58%, rgba(0,214,255,0.35) 59% 60%, rgba(0,0,0,0) 61%),
+        conic-gradient(from 0deg, rgba(0,214,255,0.9), rgba(39,255,167,0.7), rgba(0,214,255,0.9));
+      filter: drop-shadow(0 0 18px rgba(0,214,255,0.45));
+      animation: rotate3d 12s linear infinite;
+    }
+    @keyframes rotate3d {
+      from { transform: rotateX(55deg) rotateZ(0deg); }
+      to { transform: rotateX(55deg) rotateZ(360deg); }
+    }
+
+    .layout-flex {
+      display: flex;
+      align-items: stretch;
+      gap: 12px;
+      height: 100%;
+    }
+    .col {
+      display: grid;
+      gap: 12px;
+      grid-auto-rows: minmax(120px, auto);
+      flex: 1 1 0;
+    }
+
+    /* --- 迷你可视化 --- */
+    .mini-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .mini { background: var(--glass); border: 1px solid rgba(0,214,255,0.20); border-radius: 12px; padding: 10px; position: relative; }
+    .mini-label { font-size: 12px; color: var(--ink-dim); margin-bottom: 6px; }
+    .mini-value { font-size: 14px; font-weight: 700; }
+
+    /* Ring progress */
+    .ring {
+      width: 88px; height: 88px; border-radius: 50%;
+      background:
+        conic-gradient(var(--ring-color, #00d6ff) calc(var(--value, 0) * 1turn), rgba(255,255,255,0.08) 0);
+      display: grid; place-items: center;
+      margin: 6px auto 4px auto;
+      box-shadow: 0 0 12px rgba(0,214,255,0.25) inset;
+    }
+    .ring::before {
+      content: attr(data-text);
+      width: 64px; height: 64px; border-radius: 50%;
+      display: grid; place-items: center;
+      background: radial-gradient(circle at 50% 50%, rgba(0,0,0,0.35), rgba(255,255,255,0.06));
+      color: #e9f7ff; font-weight: 800; font-size: 14px;
+    }
+    .ring.ticks {
+      background:
+        conic-gradient(var(--ring-color, #27ffa7) calc(var(--value, 0) * 1turn), rgba(255,255,255,0.08) 0),
+        repeating-conic-gradient(from -90deg, rgba(255,255,255,0.12) 0 2deg, transparent 2deg 6deg);
+    }
+
+    /* Vertical bar */
+    .bar-v { height: 110px; border-radius: 10px; border: 1px dashed rgba(255,255,255,0.18); padding: 6px; display: flex; align-items: flex-end; justify-content: center; }
+    .bar-v .fill {
+      width: 36px; height: calc(var(--value, 0) * 100%);
+      background: linear-gradient(180deg, rgba(0,214,255,0.9), rgba(39,255,167,0.75));
+      border-radius: 8px;
+      box-shadow: 0 6px 16px rgba(0,214,255,0.25);
+      transition: height 600ms ease;
+    }
+    /* 动态渐变动画 */
+    @keyframes gradientFlow {
+      0% { background-position: 0% 0%; }
+      50% { background-position: 0% 100%; }
+      100% { background-position: 0% 0%; }
+    }
+    .bar-v .fill { background-size: 100% 200%; animation: gradientFlow 4s ease-in-out infinite; }
+    /* 参数配色 */
+    .bar-v.bar-temp .fill { background-image: linear-gradient(180deg, #ffb84d, #ff6a3d); }
+    .bar-v.bar-hum .fill { background-image: linear-gradient(180deg, #3ec0ff, #0099ff); }
+    .bar-v.bar-level .fill { background-image: linear-gradient(180deg, #27ffa7, #00d6ff); }
+    .bar-v.bar-press .fill { background-image: linear-gradient(180deg, #b388ff, #7c4dff); }
+    /* 存储板块三等分布局 */
+    .panel-grid.three-equal { grid-template-columns: repeat(3, 1fr); }
+    .bar-caption { text-align: center; margin-top: 6px; font-size: 12px; color: #d6f3ff; font-weight: 700; }
+
+    .pill { display: inline-block; padding: 6px 10px; border: 1px solid rgba(0,214,255,0.22); border-radius: 999px; background: rgba(255,255,255,0.06); font-size: 12px; margin-top: 8px; }
+    /* 横向进度条（燃料余量） */
+    .progress-h { height: 8px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); border-radius: 999px; overflow: hidden; margin-top: 8px; }
+    .progress-h .bar { height: 100%; width: calc(var(--value, 0) * 100%); background: linear-gradient(90deg, #ff7a8f, #ff2b4f); box-shadow: 0 0 8px rgba(255, 43, 79, 0.6); transition: width 600ms ease; }
+
+    /* 智能化库存管理 布局与样式 */
+    .smart { display: flex; gap: 12px; align-items: stretch; }
+    .smart-left { width: 340px; display: grid; gap: 8px; grid-auto-rows: minmax(44px, auto); }
+    .smart-right { flex: 1 1 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .stat { background: var(--glass); border: 1px solid rgba(0,214,255,0.20); border-radius: 12px; padding: 8px 10px; box-shadow: inset 0 0 12px rgba(0,214,255,0.08); }
+    .stat .label { font-size: 11px; color: var(--ink-dim); }
+    .stat .value { font-size: 18px; font-weight: 800; letter-spacing: 0.6px; margin-top: 4px; }
+    @keyframes blinkGlow { 0%,100% { box-shadow: inset 0 0 12px rgba(0,214,255,0.08); border-color: rgba(0,214,255,0.20); } 50% { box-shadow: 0 0 18px rgba(0,214,255,0.45); border-color: rgba(0,214,255,0.45); } }
+    .stat.blink { animation: blinkGlow 0.6s ease; }
+    /* 三个并排的小框 */
+    .smart-mini-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .stat-mini { background: var(--glass); border: 1px solid rgba(0,214,255,0.20); border-radius: 12px; padding: 6px 8px; text-align: center; box-shadow: inset 0 0 12px rgba(0,214,255,0.08); }
+    .stat-mini .label { font-size: 11px; color: var(--ink-dim); }
+    .stat-mini .value { font-size: 16px; font-weight: 800; letter-spacing: 0.6px; margin-top: 2px; }
+    .stat-mini.blink { animation: blinkGlow 0.6s ease; }
+    /* 天气框：更紧凑的高度 + 更大的数值字体 */
+    #stat-weather { padding: 4px 8px; }
+    #stat-weather .label { font-size: 11px; margin: 0; line-height: 1; }
+    #stat-weather .value { font-size: 22px; line-height: 1.2; margin-top: 2px; display: grid; grid-template-columns: repeat(2, auto); column-gap: 12px; row-gap: 2px; white-space: normal; overflow: visible; text-overflow: clip; }
+    /* 4列一行：天气 + 三个船舶框 */
+    .smart-mini-row-4 { display: grid; grid-template-columns: 1fr; gap: 8px; align-items: stretch; }
+    /* AI预测样式 */
+    .ai-badge { padding: 6px 10px; border: 1px solid rgba(0,214,255,0.5); border-radius: 999px; background: rgba(0,214,255,0.12); color: #e8fbff; font-size: 14px; font-weight: 800; text-shadow: 0 0 10px rgba(0,214,255,0.45); animation: aiBadgeFlash 1.6s ease-in-out infinite; }
+    @keyframes aiBadgeFlash { 0%, 100% { box-shadow: 0 0 0 rgba(0,214,255,0), 0 0 0 rgba(39,255,167,0); opacity: 0.95; } 50% { box-shadow: 0 0 18px rgba(0,214,255,0.5), 0 0 28px rgba(39,255,167,0.35); opacity: 1; } }
+    .ai-predict { display: grid; gap: 10px; }
+    .predict-item { background: var(--glass); border: 1px solid rgba(0,214,255,0.20); border-radius: 12px; padding: 10px; box-shadow: inset 0 0 12px rgba(0,214,255,0.08); }
+    .predict-title { font-size: 12px; color: var(--ink-dim); margin-bottom: 6px; }
+    .predict-row { display: grid; grid-template-columns: 64px 1fr auto; align-items: center; gap: 10px; margin-top: 6px; }
+    .predict-label { font-size: 12px; color: var(--ink-dim); }
+    .predict-value { font-size: 16px; font-weight: 800; color: #e9f7ff; }
+    .predict-bar { height: 8px; border-radius: 999px; overflow: hidden; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.06); }
+    .predict-bar .fill { height: 100%; width: calc(var(--value, 0) * 100%); transition: width 600ms ease; }
+    .predict-bar.cons .fill { background: linear-gradient(90deg, #ff9f4d, #ff3b3b); box-shadow: 0 0 8px rgba(255,59,59,0.5); }
+    .predict-bar.supp .fill { background: linear-gradient(90deg, #27ffa7, #00d6ff); box-shadow: 0 0 8px rgba(0,214,255,0.4); }
+    .title-left { display: inline-flex; align-items: baseline; gap: 8px; }
+
+    /* --- 响应式 --- */
+    @media (max-width: 1200px) {
+      .panel-grid { grid-template-columns: 1fr 1fr; }
+      .ring-3d { width: 130px; height: 130px; }
+    }
+    @media (max-width: 900px) {
+      .dashboard { grid-template-columns: 80px 1fr; }
+      .nav-text { display: none; }
+      .title { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-nebula"></div>
+  <div class="bg-grid"></div>
+
+  <div class="dashboard">
+    <header class="header frame-glow">
+      <div class="title-wrap">
+        <div class="title-badge"></div>
+        <div>
+          <div class="title-row">
+          <h1 class="title">巴西桑托斯港生物柴油加注管理系统</h1>
+            <div class="title-time-inline" id="clock">--:--:--</div>
+          </div>
+          <div class="subtitle">Digital Twin Visualization | Santos, Brazil</div>
+        </div>
+      </div>
+      <div class="header-right">
+        <span class="pulse-dot"></span>
+        <span>系统状态：在线</span>
+      </div>
+    </header>
+
+    <aside class="sidebar frame-glow">
+      <div class="nav">
+        <div class="nav-title">功能导航</div>
+        <button class="nav-btn active" data-target="#sec-storage" aria-pressed="true">
+          <span class="nav-icon">⛽</span>
+          <span class="nav-text">燃料存储</span>
+        </button>
+        <button class="nav-btn" data-target="#sec-transport">
+          <span class="nav-icon">🚚</span>
+          <span class="nav-text">燃料运输</span>
+        </button>
+        <button class="nav-btn" data-target="#sec-refuel">
+          <span class="nav-icon">🛳️</span>
+          <span class="nav-text">燃料加注</span>
+        </button>
+        <button class="nav-btn" data-target="#sec-safety">
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-text">安全监控</span>
+        </button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="sections">
+        <!-- 燃料存储（三个储罐子模块） -->
+        <section id="sec-storage" class="section active">
+          <div class="panel-grid three-equal">
+            <div class="panel">
+              <div class="panel-title">储罐 T-01 <span class="panel-subtitle">Tank 01</span></div>
+              <div class="mini-grid">
+                <div class="mini">
+                  <div class="mini-label">温度</div>
+                  <div class="bar-v bar-temp" style="--value: 0.246"><div class="fill"></div></div>
+                  <div class="bar-caption">24.6°C</div>
+                </div>
+                <div class="mini">
+                  <div class="mini-label">湿度</div>
+                  <div class="bar-v bar-hum" style="--value: 0.54"><div class="fill"></div></div>
+                  <div class="bar-caption">54%</div>
+                </div>
+                <div class="mini">
+                  <div class="mini-label">液位</div>
+                  <div class="bar-v bar-level" style="--value: 0.78"><div class="fill"></div></div>
+                  <div class="bar-caption">78%</div>
+                </div>
+                <div class="mini">
+                  <div class="mini-label">压力</div>
+                  <div class="bar-v bar-press" style="--value: 0.744"><div class="fill"></div></div>
+                  <div class="bar-caption">186 kPa</div>
+                </div>
+              </div>
+              <div class="pill">燃料余量：9,780 m³</div>
+              <div class="progress-h" style="--value: 0.78"><div class="bar"></div></div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-title">储罐 T-02 <span class="panel-subtitle">Tank 02</span></div>
+              <div class="mini-grid">
+                <div class="mini">
+                  <div class="mini-label">温度</div>
+                  <div class="bar-v bar-temp" style="--value: 0.251"><div class="fill"></div></div>
+                  <div class="bar-caption">25.1°C</div>
+                </div>
+                <div class="mini">
+                  <div class="mini-label">湿度</div>
+                  <div class="bar-v bar-hum" style="--value: 0.58"><div class="fill"></div></div>
+                  <div class="bar-caption">58%</div>
+                </div>
+                <div class="mini">
+                  <div class="mini-label">液位</div>
+                  <div class="bar-v bar-level" style="--value: 0.55"><div class="fill"></div></div>
+                  <div class="bar-caption">55%</div>
+                </div>
+                <div class="mini">
+                  <div class="mini-label">压力</div>
+                  <div class="bar-v bar-press" style="--value: 0.688"><div class="fill"></div></div>
+                  <div class="bar-caption">172 kPa</div>
+                </div>
+              </div>
+              <div class="pill">燃料余量：6,850 m³</div>
+              <div class="progress-h" style="--value: 0.55"><div class="bar"></div></div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-title">储罐 T-03 <span class="panel-subtitle">Tank 03</span></div>
+              <div class="mini-grid">
+                <div class="mini">
+                  <div class="mini-label">温度</div>
+                  <div class="bar-v bar-temp" style="--value: 0.263"><div class="fill"></div></div>
+                  <div class="bar-caption">26.3°C</div>
+                </div>
+                <div class="mini">
+                  <div class="mini-label">湿度</div>
+                  <div class="bar-v bar-hum" style="--value: 0.61"><div class="fill"></div></div>
+                  <div class="bar-caption">61%</div>
+                </div>
+                <div class="mini">
+                  <div class="mini-label">液位</div>
+                  <div class="bar-v bar-level" style="--value: 0.92"><div class="fill"></div></div>
+                  <div class="bar-caption">92%</div>
+                </div>
+                <div class="mini">
+                  <div class="mini-label">压力</div>
+                  <div class="bar-v bar-press" style="--value: 0.804"><div class="fill"></div></div>
+                  <div class="bar-caption">201 kPa</div>
+                </div>
+              </div>
+              <div class="pill">燃料余量：12,150 m³</div>
+              <div class="progress-h" style="--value: 0.92"><div class="bar"></div></div>
+            </div>
+
+            <div class="panel" style="grid-column: span 3;">
+              <div class="panel-title"><span class="title-left">智能化库存管理 <span class="panel-subtitle">Smart Inventory</span></span><span class="ai-badge">AI模型预估未来24小时内燃料消耗与补给情况（接入中远海科Hi-Dolphin）</span></div>
+              <div class="smart">
+                <div class="smart-left">
+                  <div class="smart-mini-row-4">
+                    <div class="stat" id="stat-weather">
+                      <div class="label">天气</div>
+                      <div class="value">
+                        <div>状态：<span id="weatherCond">多云</span></div>
+                        <div>温度：<span id="weatherTemp">27</span>°C</div>
+                        <div>湿度：<span id="weatherHumidity">62</span>%</div>
+                        <div>风速：<span id="weatherWind">5.6</span> m/s</div>
+                      </div>
+                    </div>
+                    <div class="stat-mini" id="stat-docked">
+                      <div class="label">靠港船舶</div>
+                      <div class="value"><span id="shipDocked">12</span> 艘</div>
+                    </div>
+                    <div class="stat-mini" id="stat-inbound">
+                      <div class="label">进港船舶（24h）</div>
+                      <div class="value"><span id="shipInbound">7</span> 艘</div>
+                    </div>
+                    <div class="stat-mini" id="stat-outbound">
+                      <div class="label">出港船舶（24h）</div>
+                      <div class="value"><span id="shipOutbound">6</span> 艘</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="smart-right">
+                  <div style="grid-column: span 2;">
+                    <div class="ai-predict">
+                      <div class="predict-item">
+                        <div class="predict-title">储罐 T-01 预估</div>
+                        <div class="predict-row">
+                          <div class="predict-label">消耗</div>
+                          <div class="predict-bar cons" style="--value: 0.62"><div class="fill"></div></div>
+                          <div class="predict-value">2,150 m³/24h</div>
+                        </div>
+                        <div class="predict-row">
+                          <div class="predict-label">补给</div>
+                          <div class="predict-bar supp" style="--value: 0.46"><div class="fill"></div></div>
+                          <div class="predict-value">1,600 m³/24h</div>
+                        </div>
+                      </div>
+                      <div class="predict-item">
+                        <div class="predict-title">储罐 T-02 预估</div>
+                        <div class="predict-row">
+                          <div class="predict-label">消耗</div>
+                          <div class="predict-bar cons" style="--value: 0.38"><div class="fill"></div></div>
+                          <div class="predict-value">1,320 m³/24h</div>
+                        </div>
+                        <div class="predict-row">
+                          <div class="predict-label">补给</div>
+                          <div class="predict-bar supp" style="--value: 0.28"><div class="fill"></div></div>
+                          <div class="predict-value">900 m³/24h</div>
+                        </div>
+                      </div>
+                      <div class="predict-item">
+                        <div class="predict-title">储罐 T-03 预估</div>
+                        <div class="predict-row">
+                          <div class="predict-label">消耗</div>
+                          <div class="predict-bar cons" style="--value: 0.78"><div class="fill"></div></div>
+                          <div class="predict-value">2,780 m³/24h</div>
+                        </div>
+                        <div class="predict-row">
+                          <div class="predict-label">补给</div>
+                          <div class="predict-bar supp" style="--value: 0.62"><div class="fill"></div></div>
+                          <div class="predict-value">2,200 m³/24h</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 燃料运输 -->
+        <section id="sec-transport" class="section">
+          <div class="layout-flex">
+            <div class="col">
+              <div class="panel">
+                <div class="panel-title">运输调度 <span class="panel-subtitle">Dispatch</span></div>
+                <div class="dispatch-controls">
+                  <div>
+                    <label class="form-label" for="dispatchTruck">选择运输车</label>
+                    <select id="dispatchTruck">
+                      <option value="001">运输车001</option>
+                      <option value="002">运输车002</option>
+                      <option value="003">运输车003</option>
+                      <option value="004">运输车004</option>
+                      <option value="005">运输车005</option>
+                      <option value="006">运输车006</option>
+                      <option value="007">运输车007</option>
+                      <option value="008">运输车008</option>
+                      <option value="009">运输车009</option>
+                      <option value="010">运输车010</option>
+                      <option value="011">运输车011</option>
+                      <option value="012">运输车012</option>
+                      <option value="013">运输车013</option>
+                      <option value="014">运输车014</option>
+                      <option value="015">运输车015</option>
+                      <option value="016">运输车016</option>
+                      <option value="017">运输车017</option>
+                      <option value="018">运输车018</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="form-label" for="dispatchCmd">调度指令</label>
+                    <input type="text" id="dispatchCmd" placeholder="例如：08:30 去4号储罐提货，后送至5号码头"/>
+                  </div>
+                  <div>
+                    <button id="btnAiDispatch" class="btn btn-primary">AI调度方案生成</button>
+                  </div>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-title">车队状态 <span class="panel-subtitle">Fleet</span></div>
+                <div class="kpi-row">
+                  <div class="kpi"><div class="kpi-label">在途车辆</div><div class="kpi-value">18</div></div>
+                  <div class="kpi"><div class="kpi-label">装载率</div><div class="kpi-value">78%</div></div>
+                  <div class="kpi"><div class="kpi-label">准点率</div><div class="kpi-value">92%</div></div>
+                </div>
+                <div class="scroll-list" style="margin-top:10px; height:140px">
+                  <div class="scroll-track" id="fleetTrack">
+                    <!-- items inserted by script -->
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col" style="flex:1.2 1 0">
+              <div class="panel" style="display:grid; place-items:center; min-height: 100%">
+                <div class="panel-title" style="position:absolute; top:12px; left:12px; right:12px;">
+                  港区态势图 <span class="panel-subtitle">Port View</span>
+                </div>
+                <div class="port-map" style="width:100%; height:100%; align-self: stretch; justify-self: stretch;">
+                  <svg viewBox="0 0 800 520" width="100%" height="100%" preserveAspectRatio="none" aria-label="港区态势图">
+                    <defs>
+                      <linearGradient id="gradBlock" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#0e5a7d" stop-opacity="0.60"></stop>
+                        <stop offset="100%" stop-color="#0a2746" stop-opacity="0.60"></stop>
+                      </linearGradient>
+                      <linearGradient id="gradWater" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#00d6ff" stop-opacity="0.18"></stop>
+                        <stop offset="100%" stop-color="#27ffa7" stop-opacity="0.10"></stop>
+                      </linearGradient>
+                      <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"></feGaussianBlur>
+                        <feMerge>
+                          <feMergeNode in="blur"></feMergeNode>
+                          <feMergeNode in="SourceGraphic"></feMergeNode>
+                        </feMerge>
+                      </filter>
+                    </defs>
+
+                    <!-- 水域填充（先绘制在底层） -->
+                    <path d="M 0 60 C 80 80, 160 50, 240 85 S 400 110, 520 80 680 70, 800 90 L 800 520 L 0 520 Z" fill="url(#gradWater)" opacity="0.6"></path>
+
+                    <!-- 网格矩形（放在岸线下方位置，绘制在水域之上） -->
+                    <g filter="url(#softGlow)">
+                      <!-- 统一尺寸：宽110，高80；四排六列；左右边距20，水平间距20；增大行间距到20 -->
+                      <!-- Row 1 (y=130) -->
+                      <rect x="20" y="130" width="110" height="80" rx="12" fill="url(#gradBlock)" stroke="#ffffff" stroke-opacity="0.18"></rect>
+                      <rect x="150" y="130" width="110" height="80" rx="12" fill="url(#gradBlock)" stroke="#ffffff" stroke-opacity="0.18"></rect>
+                      <rect x="280" y="130" width="110" height="80" rx="12" fill="url(#gradBlock)" stroke="#ffffff" stroke-opacity="0.18"></rect>
+                      <rect x="410" y="130" width="110" height="80" rx="12" fill="url(#gradBlock)" stroke="#ffffff" stroke-opacity="0.18"></rect>
+                      <rect x="540" y="130" width="110" height="80" rx="12" fill="url(#gradBlock)" stroke="#ffffff" stroke-opacity="0.18"></rect>
+                      <rect x="670" y="130" width="110" height="80" rx="12" fill="url(#gradBlock)" stroke="#ffffff" stroke-opacity="0.18"></rect>
+
+                      <!-- Row 2 (y=230) -->
+                      <rect x="20" y="230" width="110" height="80" rx="12" fill="url(#gradBlock)" stroke="#ffffff" stroke-opacity="0.18"></rect>
+                      <rect x="150" y="230" width="110" height="80" rx="12" fill="url(#gradBlock)" stroke="#ffffff" stroke-opacity="0.18"></rect>
+                      <rect x="280" y="230" width="110" height="80" rx="12" fill="url(#gradBlock)" stroke="#ffffff" stroke-opacity="0.18"></rect>
+                      <rect x="410" y="230" width="110" height="80" rx="12" fill="url(#gradBlock)" stroke="#ffffff" stroke-opacity="0.18"></rect>
+                      <rect x="540" y="230" width="110" height="80" rx="12" fill="url(#gradBlock)" stroke="#ffffff" stroke-opacity="0.18"></rect>
+                      <rect x="670" y="230" width="110" height="80" rx="12" fill="url(#gradBlock)" stroke="#ffffff" stroke-opacity="0.18"></rect>
+
+                      <!-- Row 3 (y=330) -->
+                      <rect x="20" y="330" width="110" height="80" rx="12" fill="url(#gradBlock)" stroke="#ffffff" stroke-opacity="0.18"></rect>
+                      <rect x="150" y="330" width="110" height="80" rx="12" fill="url(#gradBlock)" stroke="#ffffff" stroke-opacity="0.18"></rect>
+                      <rect x="280" y="330" width="110" height="80" rx="12" fill="url(#gradBlock)" stroke="#ffffff" stroke-opacity="0.18"></rect>
+                      <rect x="410" y="330" width="110" height="80" rx="12" fill="url(#gradBlock)" stroke="#ffffff" stroke-opacity="0.18"></rect>
+                      <rect x="540" y="330" width="110" height="80" rx="12" fill="url(#gradBlock)" stroke="#ffffff" stroke-opacity="0.18"></rect>
+                      <rect x="670" y="330" width="110" height="80" rx="12" fill="url(#gradBlock)" stroke="#ffffff" stroke-opacity="0.18"></rect>
+
+                      <!-- Row 4 (y=430) -->
+                      <rect x="20" y="430" width="110" height="80" rx="12" fill="url(#gradBlock)" stroke="#ffffff" stroke-opacity="0.18"></rect>
+                      <rect x="150" y="430" width="110" height="80" rx="12" fill="url(#gradBlock)" stroke="#ffffff" stroke-opacity="0.18"></rect>
+                      <rect x="280" y="430" width="110" height="80" rx="12" fill="url(#gradBlock)" stroke="#ffffff" stroke-opacity="0.18"></rect>
+                      <rect x="410" y="430" width="110" height="80" rx="12" fill="url(#gradBlock)" stroke="#ffffff" stroke-opacity="0.18"></rect>
+                      <rect x="540" y="430" width="110" height="80" rx="12" fill="url(#gradBlock)" stroke="#ffffff" stroke-opacity="0.18"></rect>
+                      <rect x="670" y="430" width="110" height="80" rx="12" fill="url(#gradBlock)" stroke="#ffffff" stroke-opacity="0.18"></rect>
+                    </g>
+
+                    <!-- 运输车红色圆点（18个），8个缓慢随机移动，10个固定） -->
+                    <g id="vehDots">
+                      <!-- 固定10个：放在矩形间隙的大致区域 -->
+                      <g class="veh" data-id="001"><circle class="veh-dot veh-blink" cx="95" cy="220" r="5"></circle><text class="veh-label" x="105" y="218">001</text></g>
+                      <g class="veh" data-id="002"><circle class="veh-dot veh-blink" cx="205" cy="215" r="5"></circle><text class="veh-label" x="215" y="213">002</text></g>
+                      <g class="veh" data-id="003"><circle class="veh-dot veh-blink" cx="335" cy="225" r="5"></circle><text class="veh-label" x="345" y="223">003</text></g>
+                      <g class="veh" data-id="004"><circle class="veh-dot veh-blink" cx="465" cy="225" r="5"></circle><text class="veh-label" x="475" y="223">004</text></g>
+                      <g class="veh" data-id="005"><circle class="veh-dot veh-blink" cx="595" cy="220" r="5"></circle><text class="veh-label" x="605" y="218">005</text></g>
+                      <g class="veh" data-id="006"><circle class="veh-dot veh-blink" cx="725" cy="225" r="5"></circle><text class="veh-label" x="735" y="223">006</text></g>
+                      <g class="veh" data-id="007"><circle class="veh-dot veh-blink" cx="145" cy="320" r="5"></circle><text class="veh-label" x="155" y="318">007</text></g>
+                      <g class="veh" data-id="008"><circle class="veh-dot veh-blink" cx="275" cy="320" r="5"></circle><text class="veh-label" x="285" y="318">008</text></g>
+                      <g class="veh" data-id="009"><circle class="veh-dot veh-blink" cx="405" cy="320" r="5"></circle><text class="veh-label" x="415" y="318">009</text></g>
+                      <g class="veh" data-id="010"><circle class="veh-dot veh-blink" cx="535" cy="320" r="5"></circle><text class="veh-label" x="545" y="318">010</text></g>
+
+                      <!-- 可移动8个：初始散布在间隙，后续由脚本缓慢漂移 -->
+                      <g class="veh movable" data-id="011"><circle class="veh-dot veh-blink" cx="665" cy="320" r="5"></circle><circle class="veh-pulse" cx="665" cy="320" r="8"></circle><text class="veh-label" x="675" y="318">011</text></g>
+                      <g class="veh movable" data-id="012"><circle class="veh-dot veh-blink" cx="95" cy="420" r="5"></circle><circle class="veh-pulse" cx="95" cy="420" r="8"></circle><text class="veh-label" x="105" y="418">012</text></g>
+                      <g class="veh movable" data-id="013"><circle class="veh-dot veh-blink" cx="225" cy="420" r="5"></circle><circle class="veh-pulse" cx="225" cy="420" r="8"></circle><text class="veh-label" x="235" y="418">013</text></g>
+                      <g class="veh movable" data-id="014"><circle class="veh-dot veh-blink" cx="355" cy="420" r="5"></circle><circle class="veh-pulse" cx="355" cy="420" r="8"></circle><text class="veh-label" x="365" y="418">014</text></g>
+                      <g class="veh movable" data-id="015"><circle class="veh-dot veh-blink" cx="485" cy="420" r="5"></circle><circle class="veh-pulse" cx="485" cy="420" r="8"></circle><text class="veh-label" x="495" y="418">015</text></g>
+                      <g class="veh movable" data-id="016"><circle class="veh-dot veh-blink" cx="615" cy="420" r="5"></circle><circle class="veh-pulse" cx="615" cy="420" r="8"></circle><text class="veh-label" x="625" y="418">016</text></g>
+                      <g class="veh movable" data-id="017"><circle class="veh-dot veh-blink" cx="745" cy="420" r="5"></circle><circle class="veh-pulse" cx="745" cy="420" r="8"></circle><text class="veh-label" x="755" y="418">017</text></g>
+                      <g class="veh movable" data-id="018"><circle class="veh-dot veh-blink" cx="205" cy="270" r="5"></circle><circle class="veh-pulse" cx="205" cy="270" r="8"></circle><text class="veh-label" x="215" y="268">018</text></g>
+                    </g>
+
+                    <!-- 岸线描边（绘制在最上层） -->
+                    <path d="M 0 60 C 80 80, 160 50, 240 85 S 400 110, 520 80 680 70, 800 90" fill="none" stroke="#9adfff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9" filter="url(#softGlow)"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="panel">
+                <div class="panel-title">燃料装载量 <span class="panel-subtitle">Mileage & Energy</span></div>
+                <div class="select-row">
+                  <span>选择运输车：</span>
+                  <select id="selTruck">
+                    <option value="001">运输车001</option>
+                    <option value="002">运输车002</option>
+                    <option value="003">运输车003</option>
+                    <option value="004">运输车004</option>
+                    <option value="005">运输车005</option>
+                    <option value="006">运输车006</option>
+                    <option value="007">运输车007</option>
+                    <option value="008">运输车008</option>
+                  </select>
+                </div>
+                <div class="pie-area">
+                  <svg viewBox="0 0 200 200" width="100%" height="100%" aria-label="燃料余量饼图">
+                    <defs>
+                      <linearGradient id="pieGrad" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#27ffa7"/>
+                        <stop offset="100%" stop-color="#00d6ff"/>
+                      </linearGradient>
+                    </defs>
+                    <g transform="translate(100,100)">
+                      <!-- 圆环背景 -->
+                      <circle class="pie-track" r="68"></circle>
+                      <!-- 进度环：circumference 2πr ≈ 427 -->
+                      <circle id="pieProg" class="pie-prog" r="68" transform="rotate(-90)" stroke-dasharray="0 427"></circle>
+                      <text id="pieValue" class="pie-text" x="0" y="4">0%</text>
+                      <text id="pieSub" class="pie-sub" x="0" y="26">燃料余量</text>
+                    </g>
+                  </svg>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-title">安全监控 <span class="panel-subtitle">Safety Monitor</span></div>
+                <div class="scroll-list">
+                  <div class="scroll-track">
+                    <div class="scroll-item"><span>运输车001</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车002</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车003</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车004</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车005</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车006</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车007</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车008</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车009</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车010</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车011</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车012</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车013</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车014</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车015</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车016</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车017</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车018</span><span class="ok">状态正常</span></div>
+                    <!-- duplicate for seamless scroll -->
+                    <div class="scroll-item"><span>运输车001</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车002</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车003</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车004</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车005</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车006</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车007</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车008</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车009</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车010</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车011</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车012</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车013</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车014</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车015</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车016</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车017</span><span class="ok">状态正常</span></div>
+                    <div class="scroll-item"><span>运输车018</span><span class="ok">状态正常</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 燃料加注 -->
+        <section id="sec-refuel" class="section">
+          <div class="panel-grid">
+            <div class="panel" style="grid-column: span 2;">
+              <div class="panel-title">加注排程 <span class="panel-subtitle">Refueling Schedule</span></div>
+              <div class="chart-placeholder" style="height: 240px"></div>
+            </div>
+            <div class="panel" style="display:grid; place-items:center;">
+              <div class="panel-title" style="position:absolute; top:12px; left:12px; right:12px;">
+                码头可视 <span class="panel-subtitle">Dock Visual</span>
+              </div>
+              <div class="ring-3d"></div>
+            </div>
+            <div class="panel">
+              <div class="panel-title">作业效率 <span class="panel-subtitle">Efficiency</span></div>
+              <div class="kpi-row">
+                <div class="kpi"><div class="kpi-label">平均加注时长</div><div class="kpi-value">38 min</div></div>
+                <div class="kpi"><div class="kpi-label">平均等待时长</div><div class="kpi-value">11 min</div></div>
+                <div class="kpi"><div class="kpi-label">加注成功率</div><div class="kpi-value">99.2%</div></div>
+              </div>
+              <div class="chart-placeholder" style="margin-top:10px"></div>
+            </div>
+            <div class="panel" style="grid-column: span 3;">
+              <div class="panel-title">能力曲线 <span class="panel-subtitle">Capacity Curve</span></div>
+              <div class="chart-placeholder" style="height: 200px"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 安全监控 -->
+        <section id="sec-safety" class="section">
+          <div class="layout-flex">
+            <div class="col">
+              <div class="panel">
+                <div class="panel-title">安全态势 <span class="panel-subtitle">Security Overview</span></div>
+                <div class="chart-placeholder" style="height: 220px"></div>
+              </div>
+              <div class="panel">
+                <div class="panel-title">隐患排查 <span class="panel-subtitle">Inspections</span></div>
+                <div class="kpi-row">
+                  <div class="kpi"><div class="kpi-label">今日已检</div><div class="kpi-value">46</div></div>
+                  <div class="kpi"><div class="kpi-label">整改中</div><div class="kpi-value" style="color: var(--warning)">5</div></div>
+                  <div class="kpi"><div class="kpi-label">未处理</div><div class="kpi-value" style="color: var(--danger)">2</div></div>
+                </div>
+                <div class="chart-placeholder" style="margin-top:10px; height:140px"></div>
+              </div>
+            </div>
+            <div class="col" style="flex:1.2 1 0">
+              <div class="panel" style="display:grid; place-items:center; min-height: 100%">
+                <div class="panel-title" style="position:absolute; top:12px; left:12px; right:12px;">
+                  视觉监控孪生 <span class="panel-subtitle">Visual Digital Twin</span>
+                </div>
+                <div class="ring-3d" style="width:220px; height:220px"></div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="panel">
+                <div class="panel-title">应急资源 <span class="panel-subtitle">Emergency</span></div>
+                <div class="chart-placeholder" style="height: 240px"></div>
+              </div>
+              <div class="panel">
+                <div class="panel-title">风险热度 <span class="panel-subtitle">Risk Heat</span></div>
+                <div class="chart-placeholder" style="height: 120px"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // 左侧导航切换逻辑，仅切换可见版块与按钮状态
+    const buttons = Array.from(document.querySelectorAll('.nav-btn'));
+    const sections = Array.from(document.querySelectorAll('.section'));
+
+    function activate(targetSelector) {
+      // 更新按钮
+      buttons.forEach(btn => {
+        const isActive = btn.getAttribute('data-target') === targetSelector;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-pressed', String(isActive));
+      });
+      // 更新版块
+      sections.forEach(sec => {
+        sec.classList.toggle('active', '#' + sec.id === targetSelector);
+      });
+    }
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        activate(btn.getAttribute('data-target'));
+      });
+    });
+
+    // 键盘快速切换（可选）
+    window.addEventListener('keydown', (e) => {
+      if (e.altKey) {
+        const idx = buttons.findIndex(b => b.classList.contains('active'));
+        if (e.key === 'ArrowDown') {
+          const next = (idx + 1) % buttons.length;
+          activate(buttons[next].getAttribute('data-target'));
+        } else if (e.key === 'ArrowUp') {
+          const prev = (idx - 1 + buttons.length) % buttons.length;
+          activate(buttons[prev].getAttribute('data-target'));
+        }
+      }
+    });
+
+    // 智能化库存管理：模拟实时变动
+    const weatherCond = document.getElementById('weatherCond');
+    const weatherTemp = document.getElementById('weatherTemp');
+    const weatherHumidity = document.getElementById('weatherHumidity');
+    const weatherWind = document.getElementById('weatherWind');
+    const shipDocked = document.getElementById('shipDocked');
+    const shipInbound = document.getElementById('shipInbound');
+    const shipOutbound = document.getElementById('shipOutbound');
+
+    const statWeather = document.getElementById('stat-weather');
+    const statDocked = document.getElementById('stat-docked');
+    const statInbound = document.getElementById('stat-inbound');
+    const statOutbound = document.getElementById('stat-outbound');
+
+    const conditions = ['晴', '多云', '小雨', '阵雨', '阴'];
+    const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+    const drift = (v, delta, min, max) => clamp(v + (Math.random() * 2 - 1) * delta, min, max);
+    const jitterInt = (v, min, max, step = 1) => clamp(v + Math.round((Math.random() * 2 - 1) * step), min, max);
+    const flash = (el) => { if (!el) return; el.classList.add('blink'); setTimeout(() => el.classList.remove('blink'), 600); };
+
+    const state = {
+      condIdx: 1,
+      temp: 27,
+      hum: 62,
+      wind: 5.6,
+      docked: 12,
+      inbound: 7,
+      outbound: 6,
+    };
+
+    function updateSmart() {
+      if (!weatherCond) return;
+      if (Math.random() < 0.25) {
+        state.condIdx = (state.condIdx + (Math.random() < 0.5 ? -1 : 1) + conditions.length) % conditions.length;
+        weatherCond.textContent = conditions[state.condIdx];
+      }
+      state.temp = Math.round(drift(state.temp, 0.6, 24, 32));
+      state.hum = Math.round(drift(state.hum, 2, 45, 80));
+      state.wind = parseFloat(drift(state.wind, 0.4, 1.5, 9.0).toFixed(1));
+
+      weatherTemp.textContent = String(state.temp);
+      weatherHumidity.textContent = String(state.hum);
+      weatherWind.textContent = state.wind.toFixed(1);
+      flash(statWeather);
+
+      state.docked = jitterInt(state.docked, 8, 18, 1);
+      state.inbound = jitterInt(state.inbound, 5, 12, 1);
+      state.outbound = jitterInt(state.outbound, 4, 10, 1);
+
+      shipDocked.textContent = String(state.docked);
+      shipInbound.textContent = String(state.inbound);
+      shipOutbound.textContent = String(state.outbound);
+      [statDocked, statInbound, statOutbound].forEach(flash);
+    }
+
+    setInterval(updateSmart, 3000);
+    // 重新挂载智能化库存管理（若存在）
+    (function ensureSmart() {
+      const need = document.getElementById('stat-weather');
+      if (!need) return;
+      // nothing else needed; updateSmart will update values
+    })();
+
+    // 标题时间：每秒刷新
+    (function liveClock(){
+      const el = document.getElementById('clock');
+      if (!el) return;
+      function pad(n){ return String(n).padStart(2,'0'); }
+      function fmt(d){
+        const Y = d.getFullYear();
+        const M = pad(d.getMonth()+1);
+        const D = pad(d.getDate());
+        const h = pad(d.getHours());
+        const m = pad(d.getMinutes());
+        const s = pad(d.getSeconds());
+        return `${Y}-${M}-${D} ${h}:${m}:${s}`;
+      }
+      function tick(){ el.textContent = fmt(new Date()); }
+      tick();
+      setInterval(tick, 1000);
+    })();
+
+    // 运输调度：AI调度按钮示例（占位逻辑，可接入后端）
+    (function aiDispatch(){
+      const btn = document.getElementById('btnAiDispatch');
+      const truckSel = document.getElementById('dispatchTruck');
+      const cmd = document.getElementById('dispatchCmd');
+      if (!btn || !truckSel || !cmd) return;
+      btn.addEventListener('click', () => {
+        const id = truckSel.value;
+        const text = cmd.value.trim() || '无';
+        alert(`AI调度方案生成中\n车辆：运输车${id}\n指令：${text}\n（占位提示，可接入真实AI）`);
+      });
+    })();
+
+    // 车队状态：生成1-18号车，随机三种状态并滚动显示
+    (function fleetScroll(){
+      const track = document.getElementById('fleetTrack');
+      if (!track) return;
+      const states = [
+        { key: 'waiting', text: '等待中', cls: 'state state-waiting' },
+        { key: 'transit', text: '运输中', cls: 'state state-transit' },
+        { key: 'park', text: '停车中', cls: 'state state-park' },
+      ];
+      function randomState(){ return states[Math.floor(Math.random()*states.length)]; }
+      function buildItems(){
+        const frag = document.createDocumentFragment();
+        for (let i=1;i<=18;i++) {
+          const s = randomState();
+          const row = document.createElement('div');
+          row.className = 'scroll-item';
+          const left = document.createElement('span');
+          left.textContent = `运输车${String(i).padStart(3,'0')}`;
+          const right = document.createElement('span');
+          right.className = s.cls;
+          right.textContent = s.text;
+          row.appendChild(left); row.appendChild(right);
+          frag.appendChild(row);
+        }
+        return frag;
+      }
+      function render(){
+        track.innerHTML = '';
+        track.appendChild(buildItems());
+        track.appendChild(buildItems()); // duplicate for seamless loop
+      }
+      render();
+      // 周期性刷新状态，保持滚动列表内容动态
+      setInterval(render, 5000);
+    })();
+
+    // 里程与能耗：下拉选择 + 饼图随机数
+    (function fuelPie(){
+      const sel = document.getElementById('selTruck');
+      const prog = document.getElementById('pieProg');
+      const text = document.getElementById('pieValue');
+      if (!sel || !prog || !text) return;
+      // 预生成各车不同的随机余量（30% - 95%）
+      const data = {};
+      for (let i=1;i<=8;i++) {
+        const key = String(i).padStart(3,'0');
+        const v = Math.round((Math.random()*0.65 + 0.30) * 100); // 30-95
+        data[key] = v;
+      }
+      const CIRC = 2 * Math.PI * 68; // ≈ 427
+      function update() {
+        const key = sel.value;
+        const v = data[key] ?? 0;
+        const dash = (v/100) * CIRC;
+        prog.setAttribute('stroke-dasharray', `${dash.toFixed(1)} ${Math.max(0, CIRC-dash).toFixed(1)}`);
+        text.textContent = `${v}%`;
+      }
+      sel.addEventListener('change', update);
+      update();
+    })();
+
+    // 港区态势图：8个红点缓慢随机移动，其余固定
+    (function vehDotsMove(){
+      const svg = document.querySelector('#sec-transport svg');
+      if (!svg) return;
+      const movables = svg.querySelectorAll('#vehDots .movable');
+      if (!movables.length) return;
+      function jitter(val, delta, min, max){
+        const v = val + (Math.random()*2 - 1) * delta;
+        return Math.max(min, Math.min(max, v));
+      }
+      function step(){
+        movables.forEach((g) => {
+          const circle = g.querySelector('circle');
+          const pulse = g.querySelector('circle.veh-pulse');
+          const label = g.querySelector('text');
+          const cx = parseFloat(circle.getAttribute('cx')) || 0;
+          const cy = parseFloat(circle.getAttribute('cy')) || 0;
+          // 限制在网格区域：x 20-780，y 120-510，尽量位于矩形间隙（我们用较小步长模拟缓慢漂移）
+          const nx = jitter(cx, 6, 20, 780);
+          const ny = jitter(cy, 4, 120, 510);
+          circle.setAttribute('cx', String(nx.toFixed(1)));
+          circle.setAttribute('cy', String(ny.toFixed(1)));
+          if (pulse) { pulse.setAttribute('cx', String(nx.toFixed(1))); pulse.setAttribute('cy', String(ny.toFixed(1))); }
+          // 标签稍微偏右上
+          label.setAttribute('x', String((nx + 10).toFixed(1)));
+          label.setAttribute('y', String((ny - 2).toFixed(1)));
+        });
+      }
+      setInterval(step, 1200);
+    })();
+  </script>
+</body>
+</html> 
