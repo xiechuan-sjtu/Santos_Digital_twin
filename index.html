@@ -123,10 +123,10 @@
       box-shadow: var(--glow);
     }
     .title {
-      font-size: 26px;
-      font-weight: 700;
-      letter-spacing: 1.2px;
-      text-shadow: 0 0 18px rgba(0,214,255,0.35);
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: 1.4px;
+      text-shadow: 0 0 24px rgba(0,214,255,0.5);
       background: linear-gradient(90deg, #eff8ff, #9adfff 45%, #9effd8 90%);
       -webkit-background-clip: text;
       background-clip: text;
@@ -245,12 +245,13 @@
       text-align: center;
     }
     .footer-text {
-      font-size: 18px;
-      color: var(--ink-bright);
-      line-height: 1.4;
-      margin-bottom: 3px;
+      font-size: 22px;
+      color: var(--ink-0);
+      line-height: 1.3;
+      margin-bottom: 6px;
       opacity: 1;
-      font-weight: 600;
+      font-weight: 800;
+      letter-spacing: 0.8px;
     }
 
     /* --- 主区域 --- */
@@ -328,8 +329,8 @@
       padding: 10px 12px;
       box-shadow: inset 0 0 18px rgba(0,214,255,0.08);
     }
-    .kpi-label { font-size: 12px; color: var(--ink-dim); margin-bottom: 6px; }
-    .kpi-value { font-size: 22px; font-weight: 800; letter-spacing: 1px; }
+    .kpi-label { font-size: 15px; color: var(--ink-dim); margin-bottom: 6px; font-weight: 600; }
+    .kpi-value { font-size: 28px; font-weight: 900; letter-spacing: 1.2px; }
 
     .chart-placeholder {
       height: 180px;
@@ -374,7 +375,7 @@
 
     /* 里程与能耗 - 选择 + 饼图 */
     .select-row { display: flex; align-items: center; gap: 8px; margin: 6px 0 10px 0; color: var(--ink-dim); font-size: 12px; }
-    .select-row select { background: rgba(255,255,255,0.06); color: #e9f7ff; border: 1px solid rgba(255,255,255,0.18); border-radius: 8px; padding: 4px 8px; }
+    .select-row select { background: #003366; color: #e9f7ff; border: 1px solid rgba(255,255,255,0.18); border-radius: 8px; padding: 4px 8px; }
     .pie-area { height: 220px; border-radius: 10px; border: 1px dashed rgba(255,255,255,0.18); background: linear-gradient(180deg, rgba(0,214,255,0.12), rgba(39,255,167,0.06)); display: grid; place-items: center; }
     .pie-text { fill: #e9f7ff; font-weight: 800; font-size: 22px; text-anchor: middle; dominant-baseline: middle; }
     .pie-sub { fill: var(--ink-dim); font-size: 12px; text-anchor: middle; dominant-baseline: middle; }
@@ -393,6 +394,9 @@
       border-radius: 8px;
       padding: 8px 10px;
       outline: none;
+    }
+    .dispatch-controls select {
+      background: #003366;
     }
     .btn { cursor: pointer; border: 1px solid rgba(0,214,255,0.30); border-radius: 10px; padding: 10px 14px; font-weight: 800; letter-spacing: 0.6px; }
     .btn-primary { background: linear-gradient(90deg, #00d6ff, #27ffa7); color: #0a1328; box-shadow: 0 0 12px rgba(0,214,255,0.25); }
@@ -433,7 +437,7 @@
     .hazard-scroll { position: relative; }
     .hazard-list {
       display: grid;
-      gap: 6px;
+      gap: 10px;
       padding: 8px;
       animation: scrollUpList 12s linear infinite;
     }
@@ -441,11 +445,12 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 6px 10px;
+      padding: 12px 14px;
       background: var(--glass);
       border: 1px solid rgba(0,214,255,0.18);
-      border-radius: 8px;
-      font-size: 13px;
+      border-radius: 10px;
+      font-size: 14px;
+      min-height: 48px;
     }
     .hazard-title { flex: 1; }
     .hazard-status { font-weight: 800; font-size: 12px; }
@@ -855,6 +860,183 @@
       letter-spacing: 0.4px;
     }
 
+    /* 无人机监测数据样式 */
+    .drone-monitoring {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .drone-data-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      flex: 1;
+    }
+    .drone-item {
+      background: var(--glass);
+      border: 1px solid rgba(0,214,255,0.20);
+      border-radius: 12px;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: inset 0 0 12px rgba(0,214,255,0.08);
+    }
+    .drone-icon {
+      font-size: 28px;
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+    }
+    .drone-info {
+      flex: 1;
+      display: grid;
+      gap: 4px;
+    }
+    .drone-label {
+      font-size: 14px;
+      color: var(--ink-dim);
+      font-weight: 600;
+    }
+    .drone-value {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--ink-0);
+      letter-spacing: 0.6px;
+    }
+    .drone-status {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 999px;
+      text-align: center;
+    }
+    .drone-status.normal {
+      color: var(--accent);
+      background: rgba(39,255,167,0.12);
+      border: 1px solid rgba(39,255,167,0.25);
+    }
+    .drone-status.warning {
+      color: var(--warning);
+      background: rgba(255,184,77,0.12);
+      border: 1px solid rgba(255,184,77,0.25);
+    }
+    .drone-status.danger {
+      color: var(--danger);
+      background: rgba(255,92,124,0.12);
+      border: 1px solid rgba(255,92,124,0.25);
+    }
+    .drone-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 10px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--ink-dim);
+      font-weight: 600;
+    }
+    .drone-online {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* 风险热度指标样式 */
+    .risk-metrics {
+      display: grid;
+      gap: 10px;
+      padding: 8px;
+    }
+    .risk-metric-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--glass);
+      border: 1px solid rgba(0,214,255,0.20);
+      border-radius: 10px;
+      padding: 12px 14px;
+      box-shadow: inset 0 0 12px rgba(0,214,255,0.08);
+    }
+    .risk-metric-icon {
+      font-size: 24px;
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+    }
+    .risk-metric-info {
+      flex: 1;
+      display: grid;
+      gap: 4px;
+    }
+    .risk-metric-label {
+      font-size: 14px;
+      color: var(--ink-dim);
+      font-weight: 700;
+    }
+    .risk-metric-value {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--ink-0);
+      letter-spacing: 0.6px;
+    }
+
+    /* 无人机控制区域样式 */
+    .drone-control-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      margin: 8px 0;
+    }
+    .drone-command-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .drone-command-input {
+      min-height: 44px;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    .drone-start-btn {
+      width: 100%;
+      font-size: 16px;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    /* Santos图片显示样式 */
+    .santos-image-container {
+      background: linear-gradient(180deg, rgba(0,214,255,0.08), rgba(39,255,167,0.04));
+      border: 1px solid rgba(0,214,255,0.12);
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    .santos-image {
+      transition: transform 0.3s ease;
+    }
+    .santos-image:hover {
+      transform: scale(1.02);
+    }
+
     /* --- 响应式 --- */
     @media (max-width: 1200px) {
       .panel-grid { grid-template-columns: 1fr 1fr; }
@@ -863,7 +1045,7 @@
     @media (max-width: 900px) {
       .dashboard { grid-template-columns: 80px 1fr; }
       .nav-text { display: none; }
-      .title { font-size: 20px; }
+      .title { font-size: 24px; }
     }
   </style>
 </head>
@@ -910,8 +1092,10 @@
         </button>
       </div>
       <div class="nav-footer">
-        <div class="footer-text">中远海运集团2025管培生培训</div>
-        <div class="footer-text">课题研讨第八组展示使用</div>
+        <div class="footer-text">中远海运集团</div>
+        <div class="footer-text">2025管培生培训</div>
+        <div class="footer-text">课题研讨第八组</div>
+        <div class="footer-text">展示使用</div>
       </div>
     </aside>
 
@@ -1161,7 +1345,7 @@
                     </defs>
 
                     <!-- 水域填充（先绘制在底层） -->
-                    <path d="M 0 60 L 200 70 L 400 85 L 600 75 L 800 90 L 800 520 L 0 520 Z" fill="url(#gradWater)" opacity="0.6"></path>
+                    <path d="M 0 75 L 800 75 L 800 520 L 0 520 Z" fill="url(#gradWater)" opacity="0.6"></path>
 
                     <!-- 网格矩形（放在岸线下方位置，绘制在水域之上） -->
                     <g filter="url(#softGlow)">
@@ -1225,7 +1409,7 @@
                     </g>
 
                     <!-- 岸线描边（绘制在最上层） -->
-                    <path d="M 0 60 L 200 70 L 400 85 L 600 75 L 800 90" fill="none" stroke="#9adfff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9" filter="url(#softGlow)"></path>
+                    <path d="M 0 75 L 800 75" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="1.0"></path>
                   </svg>
                 </div>
               </div>
@@ -1431,16 +1615,18 @@
             <div class="col">
               <div class="panel">
                 <div class="panel-title">安全态势 <span class="panel-subtitle">Security Overview</span></div>
-                <div class="chart-placeholder" style="height: 220px"></div>
+                <div class="santos-image-container" style="height: 220px; display: flex; align-items: center; justify-content: center; padding: 8px;">
+                  <img src="santos.png" alt="Santos Port Overview" class="santos-image" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,214,255,0.15);">
+                </div>
               </div>
-              <div class="panel">
+              <div class="panel" style="display: flex; flex-direction: column;">
                 <div class="panel-title">隐患排查 <span class="panel-subtitle">Inspections</span></div>
                 <div class="kpi-row">
                   <div class="kpi"><div class="kpi-label">今日已检</div><div class="kpi-value">46</div></div>
                   <div class="kpi"><div class="kpi-label">整改中</div><div class="kpi-value" style="color: var(--warning)">5</div></div>
                   <div class="kpi"><div class="kpi-label">未处理</div><div class="kpi-value" style="color: var(--danger)">2</div></div>
                 </div>
-                <div class="hazard-scroll" style="margin-top:10px; height:140px; overflow:hidden;">
+                <div class="hazard-scroll" style="flex: 1; min-height: 0; overflow: hidden; margin-top: 8px;">
                   <div class="hazard-list" id="hazardList">
                     <!-- 由脚本动态填充 -->
                   </div>
@@ -1448,23 +1634,99 @@
               </div>
             </div>
             <div class="col" style="flex:1.2 1 0">
-              <div class="panel" style="display:grid; place-items:center; min-height: 100%">
-                <div class="panel-title" style="position:absolute; top:12px; left:12px; right:12px;">
+              <div class="panel" style="display: flex; flex-direction: column; min-height: 100%">
+                <div class="panel-title">
                   无人机巡视监控平台 <span class="panel-subtitle">Drone Surveillance Platform</span>
                 </div>
-                <div class="drone-icon" style="width:220px; height:220px; display: flex; align-items: center; justify-content: center; font-size: 80px; color: var(--primary);">
-                  🚁
+                <div class="drone-control-section" style="padding: 16px 8px;">
+                  <div class="drone-command-group">
+                    <label class="form-label" for="droneCommand">巡视指令</label>
+                    <input type="text" id="droneCommand" class="form-input drone-command-input" placeholder="请输入巡视指令，例如：巡检储罐区域，重点关注温度异常"/>
+                  </div>
+                  <button id="btnStartDrone" class="btn btn-primary drone-start-btn">
+                    <span class="btn-icon">🚁</span>
+                    <span class="btn-text">启动无人机</span>
+                  </button>
+                </div>
+                <div class="drone-display-area" style="flex: 1; display: flex; align-items: center; justify-content: center;">
+                  <div class="drone-icon" style="width:180px; height:180px; display: flex; align-items: center; justify-content: center; font-size: 80px; color: var(--primary);">
+                    🚁
+                  </div>
                 </div>
               </div>
             </div>
             <div class="col">
               <div class="panel">
-                <div class="panel-title">应急资源 <span class="panel-subtitle">Emergency</span></div>
-                <div class="chart-placeholder" style="height: 240px"></div>
+                <div class="panel-title">应急资源 <span class="panel-subtitle">Emergency - Drone Monitoring</span></div>
+                <div class="drone-monitoring" style="height: 240px; padding: 8px;">
+                  <div class="drone-data-grid">
+                    <div class="drone-item">
+                      <div class="drone-icon">🚁</div>
+                      <div class="drone-info">
+                        <div class="drone-label">最高VOC浓度</div>
+                        <div class="drone-value" id="voc-max">0.0 ppm</div>
+                        <div class="drone-status normal" id="voc-max-status">正常</div>
+                      </div>
+                    </div>
+                    <div class="drone-item">
+                      <div class="drone-icon">🌬️</div>
+                      <div class="drone-info">
+                        <div class="drone-label">平均VOC浓度</div>
+                        <div class="drone-value" id="voc-avg">0.0 ppm</div>
+                        <div class="drone-status normal" id="voc-avg-status">正常</div>
+                      </div>
+                    </div>
+                    <div class="drone-item">
+                      <div class="drone-icon">💨</div>
+                      <div class="drone-info">
+                        <div class="drone-label">风速</div>
+                        <div class="drone-value" id="wind-speed">0.0 m/s</div>
+                        <div class="drone-status normal">适宜</div>
+                      </div>
+                    </div>
+                    <div class="drone-item">
+                      <div class="drone-icon">🧭</div>
+                      <div class="drone-info">
+                        <div class="drone-label">风向</div>
+                        <div class="drone-value" id="wind-direction">北风</div>
+                        <div class="drone-status normal" id="wind-dir-indicator">↑</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="drone-footer">
+                    <div class="drone-update">最后更新：<span id="drone-last-update">--:--:--</span></div>
+                    <div class="drone-online">
+                      <span class="pulse-dot" style="width: 6px; height: 6px;"></span>
+                      <span>无人机在线</span>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div class="panel">
-                <div class="panel-title">风险热度 <span class="panel-subtitle">Risk Heat</span></div>
-                <div class="chart-placeholder" style="height: 120px"></div>
+                <div class="panel-title">巡检信息 <span class="panel-subtitle">Inspection Info</span></div>
+                <div class="risk-metrics">
+                  <div class="risk-metric-item">
+                    <div class="risk-metric-icon">🚁</div>
+                    <div class="risk-metric-info">
+                      <div class="risk-metric-label">今日已巡检里程</div>
+                      <div class="risk-metric-value" id="patrol-distance">156.8 km</div>
+                    </div>
+                  </div>
+                  <div class="risk-metric-item">
+                    <div class="risk-metric-icon">🎯</div>
+                    <div class="risk-metric-info">
+                      <div class="risk-metric-label">重点区域覆盖次数</div>
+                      <div class="risk-metric-value" id="coverage-count">23 次</div>
+                    </div>
+                  </div>
+                  <div class="risk-metric-item">
+                    <div class="risk-metric-icon">🔧</div>
+                    <div class="risk-metric-info">
+                      <div class="risk-metric-label">设备点检数</div>
+                      <div class="risk-metric-value" id="equipment-check">89 台</div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -2064,6 +2326,226 @@
         });
       }
       setInterval(step, 1200);
+    })();
+
+    // 无人机实时监测数据更新
+    (function droneMonitoring(){
+      // 获取DOM元素
+      const vocMaxEl = document.getElementById('voc-max');
+      const vocAvgEl = document.getElementById('voc-avg');
+      const windSpeedEl = document.getElementById('wind-speed');
+      const windDirectionEl = document.getElementById('wind-direction');
+      const vocMaxStatusEl = document.getElementById('voc-max-status');
+      const vocAvgStatusEl = document.getElementById('voc-avg-status');
+      const windDirIndicatorEl = document.getElementById('wind-dir-indicator');
+      const lastUpdateEl = document.getElementById('drone-last-update');
+      
+      if (!vocMaxEl || !vocAvgEl || !windSpeedEl || !windDirectionEl) return;
+      
+      // 风向数据
+      const windDirections = [
+        { name: '北风', symbol: '↑', angle: 0 },
+        { name: '东北风', symbol: '↗', angle: 45 },
+        { name: '东风', symbol: '→', angle: 90 },
+        { name: '东南风', symbol: '↘', angle: 135 },
+        { name: '南风', symbol: '↓', angle: 180 },
+        { name: '西南风', symbol: '↙', angle: 225 },
+        { name: '西风', symbol: '←', angle: 270 },
+        { name: '西北风', symbol: '↖', angle: 315 }
+      ];
+      
+      // 初始数据状态
+      const state = {
+        vocMax: 2.8,        // ppm，最高VOC浓度
+        vocAvg: 1.5,        // ppm，平均VOC浓度
+        windSpeed: 4.2,     // m/s，风速
+        windDirIndex: 0     // 风向索引
+      };
+      
+      // 数值范围和阈值
+      const ranges = {
+        vocMax: { min: 1.5, max: 8.0, warning: 5.0, danger: 7.0 },
+        vocAvg: { min: 0.8, max: 4.5, warning: 3.0, danger: 4.0 },
+        windSpeed: { min: 1.5, max: 12.0 }
+      };
+      
+      // 生成小范围随机变动
+      function drift(value, range, delta = 0.1) {
+        const newValue = value + (Math.random() * 2 - 1) * delta;
+        return Math.max(range.min, Math.min(range.max, newValue));
+      }
+      
+      // 获取状态类名和文本
+      function getVOCStatus(value, range) {
+        if (value >= range.danger) return { class: 'danger', text: '危险' };
+        if (value >= range.warning) return { class: 'warning', text: '警告' };
+        return { class: 'normal', text: '正常' };
+      }
+      
+      // 更新时间显示
+      function updateTime() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('zh-CN', { hour12: false });
+        if (lastUpdateEl) lastUpdateEl.textContent = timeStr;
+      }
+      
+      // 更新数据显示
+      function updateData() {
+        // 更新VOC数据（小范围波动）
+        state.vocMax = drift(state.vocMax, ranges.vocMax, 0.2);
+        state.vocAvg = drift(state.vocAvg, ranges.vocAvg, 0.12);
+        
+        // 确保平均值不超过最高值
+        if (state.vocAvg > state.vocMax) {
+          state.vocAvg = state.vocMax * 0.8;
+        }
+        
+        // 更新风速（小范围波动）
+        state.windSpeed = drift(state.windSpeed, ranges.windSpeed, 0.3);
+        
+        // 风向偶尔变化
+        if (Math.random() < 0.25) {
+          const change = Math.random() < 0.5 ? -1 : 1;
+          state.windDirIndex = (state.windDirIndex + change + windDirections.length) % windDirections.length;
+        }
+        
+        // 更新显示
+        vocMaxEl.textContent = state.vocMax.toFixed(1) + ' ppm';
+        vocAvgEl.textContent = state.vocAvg.toFixed(1) + ' ppm';
+        windSpeedEl.textContent = state.windSpeed.toFixed(1) + ' m/s';
+        
+        const currentWind = windDirections[state.windDirIndex];
+        windDirectionEl.textContent = currentWind.name;
+        if (windDirIndicatorEl) windDirIndicatorEl.textContent = currentWind.symbol;
+        
+        // 更新VOC状态
+        const vocMaxStatus = getVOCStatus(state.vocMax, ranges.vocMax);
+        const vocAvgStatus = getVOCStatus(state.vocAvg, ranges.vocAvg);
+        
+        if (vocMaxStatusEl) {
+          vocMaxStatusEl.textContent = vocMaxStatus.text;
+          vocMaxStatusEl.className = `drone-status ${vocMaxStatus.class}`;
+        }
+        
+        if (vocAvgStatusEl) {
+          vocAvgStatusEl.textContent = vocAvgStatus.text;
+          vocAvgStatusEl.className = `drone-status ${vocAvgStatus.class}`;
+        }
+        
+        // 更新时间
+        updateTime();
+      }
+      
+      // 初始更新
+      updateData();
+      
+      // 每1.5秒更新一次数据
+      setInterval(updateData, 1500);
+      
+      // 每秒更新时间
+      setInterval(updateTime, 1000);
+    })();
+
+    // 风险热度指标实时更新
+    (function riskMetrics(){
+      const patrolDistanceEl = document.getElementById('patrol-distance');
+      const coverageCountEl = document.getElementById('coverage-count');
+      const equipmentCheckEl = document.getElementById('equipment-check');
+      
+      if (!patrolDistanceEl || !coverageCountEl || !equipmentCheckEl) return;
+      
+      // 初始数据状态
+      const state = {
+        patrolDistance: 156.8,  // km，今日已巡检里程
+        coverageCount: 23,      // 次，重点区域覆盖次数
+        equipmentCheck: 89      // 台，设备点检数
+      };
+      
+      // 数值范围
+      const ranges = {
+        patrolDistance: { min: 120.0, max: 200.0 },
+        coverageCount: { min: 18, max: 35 },
+        equipmentCheck: { min: 75, max: 110 }
+      };
+      
+      // 生成小范围随机变动
+      function drift(value, range, delta = 0.5) {
+        const newValue = value + (Math.random() * 2 - 1) * delta;
+        return Math.max(range.min, Math.min(range.max, newValue));
+      }
+      
+      // 整数漂移
+      function driftInt(value, range, delta = 1) {
+        const newValue = value + Math.round((Math.random() * 2 - 1) * delta);
+        return Math.max(range.min, Math.min(range.max, newValue));
+      }
+      
+      // 更新数据显示
+      function updateMetrics() {
+        // 巡检里程缓慢增长（主要向上）
+        const distanceDelta = Math.random() * 0.8 + 0.1; // 0.1-0.9 的增长
+        state.patrolDistance = Math.min(ranges.patrolDistance.max, state.patrolDistance + distanceDelta);
+        
+        // 覆盖次数偶尔增加
+        if (Math.random() < 0.3) {
+          state.coverageCount = driftInt(state.coverageCount, ranges.coverageCount, 1);
+        }
+        
+        // 设备点检数偶尔增加
+        if (Math.random() < 0.25) {
+          state.equipmentCheck = driftInt(state.equipmentCheck, ranges.equipmentCheck, 1);
+        }
+        
+        // 更新显示
+        patrolDistanceEl.textContent = state.patrolDistance.toFixed(1) + ' km';
+        coverageCountEl.textContent = state.coverageCount + ' 次';
+        equipmentCheckEl.textContent = state.equipmentCheck + ' 台';
+      }
+      
+      // 初始更新
+      updateMetrics();
+      
+      // 每5秒更新一次数据
+      setInterval(updateMetrics, 5000);
+    })();
+
+    // 无人机启动控制
+    (function droneControl(){
+      const btnStartDrone = document.getElementById('btnStartDrone');
+      const droneCommandInput = document.getElementById('droneCommand');
+      
+      if (!btnStartDrone || !droneCommandInput) return;
+      
+      btnStartDrone.addEventListener('click', () => {
+        const command = droneCommandInput.value.trim();
+        if (!command) {
+          alert('请输入巡视指令');
+          droneCommandInput.focus();
+          return;
+        }
+        
+        // 模拟无人机启动过程
+        btnStartDrone.disabled = true;
+        btnStartDrone.innerHTML = '<span class="btn-icon">⏳</span><span class="btn-text">启动中...</span>';
+        
+        setTimeout(() => {
+          alert(`无人机已成功启动！\n\n执行指令：${command}\n\n系统正在执行巡视任务，请关注实时监测数据。`);
+          
+          // 恢复按钮状态
+          btnStartDrone.disabled = false;
+          btnStartDrone.innerHTML = '<span class="btn-icon">🚁</span><span class="btn-text">启动无人机</span>';
+          
+          // 清空输入框
+          droneCommandInput.value = '';
+        }, 2000);
+      });
+      
+      // 回车键快捷启动
+      droneCommandInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          btnStartDrone.click();
+        }
+      });
     })();
   </script>
 </body>
